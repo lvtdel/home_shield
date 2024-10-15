@@ -110,6 +110,12 @@ class AppTheme {
     brightness: Brightness.light,
     primaryColor: AppColors.primary,
 
+      colorScheme: ColorScheme.fromSwatch().copyWith(
+        surface: AppColors.background, // Màu nền chính cho ứng dụng
+        primary: AppColors.primary, // Màu chủ đạo
+        secondary: AppColors.white, // Màu phụ
+      ),
+
     snackBarTheme: const SnackBarThemeData(
       backgroundColor: AppColors.background,
       contentTextStyle: TextStyle(color: Colors.white),
@@ -130,11 +136,11 @@ class AppTheme {
 
     visualDensity: VisualDensity.adaptivePlatformDensity,
 
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.transparent, // AppBar sẽ có màu chủ đạo
       surfaceTintColor: AppColors.transparent,
-      iconTheme: const IconThemeData(color: Colors.black), // Màu biểu tượng
-      titleTextStyle: const TextStyle(
+      iconTheme: IconThemeData(color: Colors.black), // Màu biểu tượng
+      titleTextStyle: TextStyle(
           // fontFamily: 'poppins',
           color: Colors.black,
           fontSize: 20), // Màu và kiểu chữ tiêu đề
@@ -161,10 +167,10 @@ class AppTheme {
       fillColor: AppColors.secondBackground, // Màu nền cho input khi được điền
     ),
 
-    bottomSheetTheme: BottomSheetThemeData(
+    bottomSheetTheme: const BottomSheetThemeData(
       backgroundColor: AppColors.secondBackground, // Màu nền bottom sheet
       surfaceTintColor: AppColors.transparent,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(24),
           topRight: Radius.circular(24),

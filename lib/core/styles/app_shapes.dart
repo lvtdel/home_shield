@@ -4,11 +4,13 @@ import 'package:home_shield/core/styles/app_values.dart';
 class AppShapes {
   AppShapes._();
 
-  static final RoundedRectangleBorder roundedRectangle40 = RoundedRectangleBorder(
+  static final RoundedRectangleBorder roundedRectangle40 =
+      RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(40),
   );
 
-  static final RoundedRectangleBorder roundedRectangle30 = RoundedRectangleBorder(
+  static final RoundedRectangleBorder roundedRectangle30 =
+      RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(40),
   );
 
@@ -17,4 +19,18 @@ class AppShapes {
   static final BeveledRectangleBorder beveledRectangle = BeveledRectangleBorder(
     borderRadius: BorderRadius.circular(10.0), // Bo góc 10 pixel
   );
+
+  static const threeRoundedRectangle1 = RoundedRectangleBorder(
+      borderRadius: BorderRadius.only(
+    topLeft: Radius.circular(30),
+    topRight: Radius.circular(30),
+    bottomLeft: Radius.circular(30),
+  ));
+
+  static const threeRoundedRectangle2 = RoundedRectangleBorder(
+      borderRadius: BorderRadius.only(
+    topLeft: Radius.circular(30),
+    topRight: Radius.circular(30),
+    bottomRight: Radius.circular(30),
+  ));
 }
