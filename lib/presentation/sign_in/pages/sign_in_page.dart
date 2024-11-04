@@ -75,7 +75,7 @@ class _SignInPageState extends State<SignInPage> {
               const SizedBox(
                 height: 20,
               ),
-              const Text("Forgot password?"),
+               Text("Forgot password?", style: Theme.of(context).textTheme.titleSmall,),
               const SizedBox(
                 height: 30,
               ),
@@ -106,9 +106,15 @@ class _SignInPageState extends State<SignInPage> {
                 height: 30,
               ),
               Text.rich(TextSpan(children: [
-                const TextSpan(text: "Don’t have an account? "),
+                TextSpan(
+                    text: "Don’t have an account? ",
+                    style: Theme.of(context).textTheme.titleSmall),
                 TextSpan(
                     text: "Sign up",
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleSmall
+                        ?.copyWith(fontWeight: FontWeight.bold),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
                         context.go(Routes.signUp);

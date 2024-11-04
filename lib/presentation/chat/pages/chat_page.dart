@@ -179,7 +179,7 @@ class ChatPage extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: AppSize.s300),
           child: Text(
             "Chiều này",
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
           ),
         ),
       ),

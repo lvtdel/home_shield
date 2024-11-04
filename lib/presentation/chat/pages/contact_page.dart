@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:home_shield/core/routing/route_path.dart';
 import 'package:home_shield/core/styles/app_colors.dart';
 import 'package:home_shield/core/styles/app_shapes.dart';
 import 'package:home_shield/core/styles/app_values.dart';
@@ -11,12 +13,12 @@ class ContactPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScaffoldEdit(
-        bodySlivers: <Widget>[_contactAvatarSliver(context), _contactList()], 
+      bodySlivers: <Widget>[_contactAvatarSliver(context), _contactList()],
       floatingActionButton: FloatingActionButton(
-          onPressed: (){},
+        onPressed: () {},
         child: const Icon(Icons.add),
-      )
-      ,);
+      ),
+    );
   }
 
   SliverToBoxAdapter _contactAvatarSliver(context) {
@@ -39,18 +41,23 @@ class ContactPage extends StatelessWidget {
     );
   }
 
-  Container _avatar(double size, context) {
+  Container _avatar(double size, BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
+          shape: BoxShape.circle,
           border: Border.all(width: 4, color: Theme.of(context).primaryColor)),
       child: Container(
         clipBehavior: Clip.antiAlias,
         decoration: ShapeDecoration(shape: AppShapes.circle),
         margin: const EdgeInsets.all(AppPadding.p5),
         width: size,
-        child: Image.network(
-            "https://imgt.taimienphi.vn/cf/Images/tt/2021/8/20/top-anh-dai-dien-dep-chat-56.jpg"),
+        child: GestureDetector(
+          onTap: () {
+            context.go(Routes.chat);
+          },
+          child: Image.network(
+              "https://imgt.taimienphi.vn/cf/Images/tt/2021/8/20/top-anh-dai-dien-dep-chat-56.jpg"),
+        ),
       ),
     );
   }
@@ -67,29 +74,35 @@ class ContactPage extends StatelessWidget {
     );
   }
 
-  _contactItem(int index, context) {
-    return Card(
-      elevation: 3,
-      child: Padding(
-        padding: const EdgeInsets.all(AppPadding.p8),
-        child: Row(
-          children: [
-            _avatar(AppSize.s70, context),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Thám tử lừng danh",
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                Text(
-                  "Chiều này có vụ án mới",
-                  style: Theme.of(context).textTheme.bodySmall,
-                )
-              ],
-            )
-          ],
+  _contactItem(int index, BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        print("click chat");
+        context.go(Routes.chat);
+      },
+      child: Card(
+        elevation: 3,
+        child: Padding(
+          padding: const EdgeInsets.all(AppPadding.p8),
+          child: Row(
+            children: [
+              _avatar(AppSize.s70, context),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Thám tử lừng danh",
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  Text(
+                    "Chiều này có vụ án mới",
+                    style: Theme.of(context).textTheme.bodySmall,
+                  )
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );

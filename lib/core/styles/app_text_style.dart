@@ -87,5 +87,6 @@ class AppTextStyle {
   );
   static final TextStyle _textStyleRegular = TextStyle(
     fontFamily: AppFontFamily().getFontFamily(),
+    fontWeight: FontWeight.w400
   );
 }

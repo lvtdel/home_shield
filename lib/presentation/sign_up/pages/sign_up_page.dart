@@ -57,12 +57,14 @@ class SignUpPage extends StatelessWidget {
                 height: 20,
               ),
               textFieldEdit(
-                  AssetsRes.LOCK_ICON, "Enter password", passwordController, obscure: true),
+                  AssetsRes.LOCK_ICON, "Enter password", passwordController,
+                  obscure: true),
               const SizedBox(
                 height: 20,
               ),
-              textFieldEdit(AssetsRes.LOCK_ICON, "Confirm password",
-                  rePasswordController, obscure: true),
+              textFieldEdit(
+                  AssetsRes.LOCK_ICON, "Confirm password", rePasswordController,
+                  obscure: true),
               const SizedBox(
                 height: 20,
               ),
@@ -80,14 +82,18 @@ class SignUpPage extends StatelessWidget {
                 height: 30,
               ),
               Text.rich(TextSpan(children: [
-                const TextSpan(text: "Already have an account? "),
+                 TextSpan(text: "Already have an account? ",
+                    style: Theme.of(context).textTheme.titleSmall),
                 TextSpan(
                     text: "Sign in",
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleSmall
+                        ?.copyWith(fontWeight: FontWeight.bold),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
                         context.go(Routes.signIn);
                       })
-
               ]))
             ],
           ),

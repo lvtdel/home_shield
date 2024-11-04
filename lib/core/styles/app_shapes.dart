@@ -18,10 +18,9 @@ class AppShapes {
     borderRadius: BorderRadius.circular(32),
     boxShadow: [
       BoxShadow(
-        color: Colors.black.withOpacity(0.3), // Màu bóng
-        spreadRadius: 1, // Độ lan tỏa của bóng
-        blurRadius: 8, // Độ mờ của bóng
-        offset: Offset(0, 4), // Đặt vị trí của bóng
+        color: Colors.black.withOpacity(0.15), // Màu bóng
+        blurRadius: 10, // Độ mờ của bóng
+        offset: const Offset(0, 4), // Đặt vị trí của bóng
       ),
     ],
   );

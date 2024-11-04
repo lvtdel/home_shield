@@ -122,7 +122,7 @@ class AppTheme {
       // Màu nền phụ cho scaffold
 
       textTheme: TextTheme(
-        displayLarge: AppTextStyle.bold20,
+        displayLarge: AppTextStyle.bold28,
         titleMedium: AppTextStyle.bold18,
         titleSmall: AppTextStyle.regular16,
         bodyLarge: AppTextStyle.regular18,
