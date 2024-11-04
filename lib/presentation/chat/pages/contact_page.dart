@@ -53,7 +53,8 @@ class ContactPage extends StatelessWidget {
         width: size,
         child: GestureDetector(
           onTap: () {
-            context.go(Routes.chat);
+            // context.go(Routes.chat);
+            context.push(Routes.chat);
           },
           child: Image.network(
               "https://imgt.taimienphi.vn/cf/Images/tt/2021/8/20/top-anh-dai-dien-dep-chat-56.jpg"),
@@ -78,7 +79,9 @@ class ContactPage extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         print("click chat");
-        context.go(Routes.chat);
+        // context.go(Routes.chat);
+        context.push(Routes.chat);
+
       },
       child: Card(
         elevation: 3,
