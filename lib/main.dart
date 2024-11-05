@@ -1,9 +1,18 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:home_shield/core/routing/app_router.dart';
 import 'package:home_shield/core/styles/app_theme.dart';
+import 'package:home_shield/service_locator.dart';
 
-void main() {
+import 'firebase_options.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  await initializeDependencies();
+
   runApp(const MyApp());
 
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(

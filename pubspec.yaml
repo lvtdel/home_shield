@@ -35,6 +35,10 @@ dependencies:
   go_router:
   get_it:
   font_awesome_flutter:
+  dartz:
+  firebase_auth:
+  firebase_core:
+  cloud_firestore:
 
 
   # The following adds the Cupertino Icons font to your application.

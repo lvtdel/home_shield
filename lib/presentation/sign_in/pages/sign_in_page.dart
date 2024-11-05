@@ -1,13 +1,20 @@
+import 'dart:async';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:home_shield/core/routing/app_router.dart';
 import 'package:home_shield/core/routing/route_path.dart';
 import 'package:home_shield/core/styles/app_shapes.dart';
 import 'package:home_shield/core/styles/app_text_style.dart';
 import 'package:home_shield/core/styles/app_values.dart';
+import 'package:home_shield/domain/auth/use_cases/sign_up.dart';
+import 'package:home_shield/domain/entities/user.dart';
+import 'package:home_shield/presentation/sign_in/cubit/login_cubit.dart';
 import 'package:home_shield/presentation/widgets/text_field_edit.dart';
 import 'package:home_shield/res/assets_res.dart';
+import 'package:home_shield/service_locator.dart';
 
 class SignInPage extends StatefulWidget {
   SignInPage({super.key});
@@ -21,12 +28,86 @@ class _SignInPageState extends State<SignInPage> {
 
   final passwordController = TextEditingController();
 
+  @override
+  void initState() {
+    emailController.text = "votheluc01@gmail.com";
+    passwordController.text = "abba1221";
+
+    super.initState();
+  }
+
   _onLogin() {
-    context.go(Routes.news);
+    String email = emailController.text;
+    String pass = passwordController.text;
+
+    if (email.isEmpty || pass.isEmpty) throw Exception("Validate failed!");
+
+    context.read<LoginCubit>().login(email, pass);
   }
 
   _onGoogleLogin() {
     print("Google click");
+  }
+
+  Widget _logInButton() {
+    return BlocBuilder<LoginCubit, LoginState>(builder: (context, state) {
+      if (state is LoginInitial) {
+        return ElevatedButton(
+            onPressed: _onLogin,
+            child: Text(
+              "Login",
+              style: AppTextStyle.bold22,
+            ));
+      }
+
+      if (state is LoadingLogin) {
+        return const Center(
+          child: SizedBox(
+              height: 20, width: 20, child: CircularProgressIndicator()),
+        );
+      }
+
+      if (state is LoginSuccess) {
+        showSnackBar(context, "Welcome ${state.userName}");
+
+        Timer(const Duration(seconds: 1), () {
+          context.go(Routes.news);
+        });
+
+        return ElevatedButton(
+            onPressed: () {},
+            child: Text(
+              "Login",
+              style: AppTextStyle.bold22,
+            ));
+      }
+
+      if (state is LoginError) {
+        showSnackBar(context, "state.mess");
+        return ElevatedButton(
+            onPressed: _onLogin,
+            child: Text(
+              "Login",
+              style: AppTextStyle.bold22,
+            ));
+      }
+
+      return Text("Undefined state ${state.runtimeType}");
+    });
+  }
+
+  void showSnackBar(BuildContext context, String mess) {
+    Future.delayed(const Duration(milliseconds: 100), () {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            mess,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    });
   }
 
   @override
@@ -66,16 +147,14 @@ class _SignInPageState extends State<SignInPage> {
                   decoration: AppShapes.inputBoxDecoration,
                   height: AppSize.s60,
                   width: AppSize.s340,
-                  child: ElevatedButton(
-                      onPressed: _onLogin,
-                      child: Text(
-                        "Login",
-                        style: AppTextStyle.bold22,
-                      ))),
+                  child: _logInButton()),
               const SizedBox(
                 height: 20,
               ),
-               Text("Forgot password?", style: Theme.of(context).textTheme.titleSmall,),
+              Text(
+                "Forgot password?",
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
               const SizedBox(
                 height: 30,
               ),
@@ -86,7 +165,7 @@ class _SignInPageState extends State<SignInPage> {
                     child: Image.asset(AssetsRes.GOOGLE_ICON),
                     onTap: _onGoogleLogin,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 20,
                   ),
                   InkWell(
