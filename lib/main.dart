@@ -15,10 +15,10 @@ void main() async {
 
   runApp(const MyApp());
 
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.black, // Màu nền thanh thông báo
-    statusBarIconBrightness: Brightness.light, // Màu icon trên thanh thông báo
-  ));
+  // SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+  //   statusBarColor: Colors.black, // Màu nền thanh thông báo
+  //   statusBarIconBrightness: Brightness.light, // Màu icon trên thanh thông báo
+  // ));
 }
 
 class MyApp extends StatelessWidget {

@@ -5,8 +5,26 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:home_shield/core/styles/app_colors.dart';
 import 'package:home_shield/core/styles/app_shapes.dart';
 import 'package:home_shield/core/styles/app_values.dart';
+import 'package:home_shield/domain/post/entities/post.dart';
 
-class Post extends StatelessWidget {
+class PostElement extends StatefulWidget {
+  const PostElement(this.post, {super.key});
+
+  final Post post;
+
+  @override
+  State<PostElement> createState() => _PostElementState();
+}
+
+class _PostElementState extends State<PostElement> {
+  _onLike() {}
+
+  _onComment() {}
+
+  _onSend() {}
+
+  _onBookMark() {}
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -27,7 +45,7 @@ class Post extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.only(top: 0, left: 10, right: 10, bottom: 10),
       child: Text(
-        text,
+        widget.post.content,
         style: Theme.of(context).textTheme.bodyMedium,
         // style: TextStyle(fontFamily: "Poppins-regular", fontWeight: FontWeight.w400, fontSize: 16),
         textAlign: TextAlign.start,
@@ -45,16 +63,25 @@ class Post extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               _iconButton(
-                  icon: FontAwesomeIcons.heart, iconColor: Colors.white),
+                  icon: FontAwesomeIcons.heart,
+                  iconColor: Colors.white,
+                  onPressed: _onLike),
               const SizedBox(width: 16.0),
               _iconButton(
-                  icon: FontAwesomeIcons.comment, iconColor: Colors.white),
+                  onPressed: _onComment,
+                  icon: FontAwesomeIcons.comment,
+                  iconColor: Colors.white),
               const SizedBox(width: 16.0),
               _iconButton(
-                  icon: FontAwesomeIcons.paperPlane, iconColor: Colors.white),
+                  onPressed: _onSend,
+                  icon: FontAwesomeIcons.paperPlane,
+                  iconColor: Colors.white),
             ],
           ),
-          _iconButton(icon: FontAwesomeIcons.bookmark, iconColor: Colors.white),
+          _iconButton(
+              onPressed: _onBookMark,
+              icon: FontAwesomeIcons.bookmark,
+              iconColor: Colors.white),
         ],
       ),
     );
@@ -72,12 +99,17 @@ class Post extends StatelessWidget {
   }
 
   Widget _image() {
+    // if (post.image == null || post.image!.isEmpty) {
+    //   return const SizedBox.shrink();
+    // }
+
     return Container(
       decoration: ShapeDecoration(shape: AppShapes.roundedRectangle30),
       clipBehavior: Clip.antiAlias,
       child: Stack(children: [
-        Image.network(
-          "https://th.bing.com/th/id/OIP.4XB8NF1awQyApnQDDmBmQwHaEo?rs=1&pid=ImgDetMain",
+        (widget.post.image == null || widget.post.image!.isEmpty) ?
+        Container(color: Theme.of(context).colorScheme.primary,height: 50,) : Image.network(
+          widget.post.image!,
           fit: BoxFit.cover,
           height: 300,
           // width: 300,
@@ -122,12 +154,11 @@ class Post extends StatelessWidget {
                       shape: BoxShape.circle,
                       image: DecorationImage(
                           fit: BoxFit.fill,
-                          image: new NetworkImage(
-                              "https://pbs.twimg.com/profile_images/877903823133704194/Mqp1PXU8_400x400.jpg"))),
+                          image: NetworkImage(widget.post.user!.image!))),
                 ),
                 const SizedBox(width: 10.0),
                 Text(
-                  "The Verge",
+                  widget.post.user!.name!,
                   // style: TextStyle(fontWeight: FontWeight.bold),
                   style: Theme.of(context).textTheme.titleMedium,
                 )
@@ -141,10 +172,13 @@ class Post extends StatelessWidget {
     );
   }
 
-  final String text =
-      "Phong cảnh thiên nhiên là vẻ đẹp kỳ diệu của tạo hóa, từ núi đồi hùng vĩ đến cánh đồng mênh mông. Ánh bình minh xuyên qua sương mù, tạo nên khung cảnh bình yên, thơ mộng, làm say lòng người.";
-
   Widget _commentPost(context) {
+    if (widget.post.comments == null || widget.post.comments!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    var firstComment = widget.post.comments!.first;
+
     return Padding(
         padding: const EdgeInsets.all(10),
         child: SizedBox(
@@ -160,8 +194,7 @@ class Post extends StatelessWidget {
                     shape: BoxShape.circle,
                     image: DecorationImage(
                         fit: BoxFit.fill,
-                        image: new NetworkImage(
-                            "https://pbs.twimg.com/profile_images/877903823133704194/Mqp1PXU8_400x400.jpg"))),
+                        image: NetworkImage(firstComment.user!.image!))),
               ),
               const SizedBox(width: 10.0),
               Flexible(
@@ -169,11 +202,14 @@ class Post extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "The Verge",
-                      style: Theme.of(context).textTheme.titleSmall,
+                      firstComment.user!.name!,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleSmall
+                          ?.copyWith(fontWeight: FontWeight.w600),
                     ),
                     Text(
-                      text,
+                      firstComment.content,
                       style: Theme.of(context).textTheme.bodySmall,
                       textAlign: TextAlign.start,
                       softWrap: true,

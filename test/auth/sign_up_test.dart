@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:home_shield/domain/auth/use_cases/sign_up.dart';
-import 'package:home_shield/domain/entities/user.dart';
+import 'package:home_shield/domain/auth/entites/user.dart';
 import 'package:home_shield/firebase_options.dart';
 import 'package:home_shield/service_locator.dart';
 

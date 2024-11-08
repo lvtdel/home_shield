@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:home_shield/domain/entities/user.dart';
+import 'package:home_shield/domain/auth/entites/user.dart';
 
 abstract class AuthRepository {
   Future<Either> signUp(UserApp user);

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:home_shield/data/auth/models/user_model.dart';
-import 'package:home_shield/domain/entities/user.dart';
+import 'package:home_shield/domain/auth/entites/user.dart';
 
 abstract class AuthFirebaseService {
   Future<Either<String, UserApp>> signup(UserModel user);
@@ -89,7 +89,7 @@ class AuthFirebaseServiceImpl extends AuthFirebaseService {
   Future<Either> getUser() async {
     try {
       var currentUser = FirebaseAuth.instance.currentUser;
-      print(currentUser);
+      print("Current user: $currentUser");
       var userData = await FirebaseFirestore.instance
           .collection('users')
           .doc(currentUser?.uid)

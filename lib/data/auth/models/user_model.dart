@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:home_shield/domain/entities/user.dart';
+import 'package:home_shield/domain/auth/entites/user.dart';
 
 class UserModel {
   String? id;

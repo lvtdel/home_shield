@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:home_shield/data/auth/models/user_model.dart';
 import 'package:home_shield/data/auth/source/auth_firebase_service.dart';
 import 'package:home_shield/domain/auth/repository/auth.dart';
-import 'package:home_shield/domain/entities/user.dart';
+import 'package:home_shield/domain/auth/entites/user.dart';
 import 'package:home_shield/service_locator.dart';
 
 class AuthRepositoryImpl extends AuthRepository {

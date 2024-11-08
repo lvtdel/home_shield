@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:home_shield/core/routing/app_router.dart';
 import 'package:home_shield/core/routing/route_path.dart';
 import 'package:home_shield/core/styles/app_colors.dart';
+import 'package:home_shield/domain/post/entities/post.dart' as entity;
+import 'package:home_shield/presentation/news/bloc/news_bloc.dart';
 import 'package:home_shield/presentation/news/widgets/post_widget.dart';
 import 'package:home_shield/presentation/widgets/scaffold_edit.dart';
 
@@ -19,6 +22,8 @@ class _NewsPageState extends State<NewsPage> {
   @override
   void initState() {
     scrollController = ScrollController();
+
+    context.read<NewsBloc>().add(LoadData());
     super.initState();
   }
 
@@ -27,104 +32,65 @@ class _NewsPageState extends State<NewsPage> {
     return ScaffoldEdit(
       bodySlivers: _buildSliverList(),
       floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+        onPressed: () {},
         child: const Icon(Icons.camera),
       ),
     );
   }
 
-  Scaffold buildScaffold(BuildContext context) {
-    return Scaffold(
-    body: SafeArea(
-      child: ScrollConfiguration(
-        behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-        // controller: scrollController,
-        child: CustomScrollView(
-          // controller: scrollController,
-          slivers: [_sliverAppBar(context), _buildSliverList()],
-        ),
+  _buildSliverList() {
+    return [
+      BlocBuilder<NewsBloc, NewsState>(
+        builder: (context, state) {
+          if (state is NewsLoading) {
+            return const SliverFillRemaining(
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          if (state is NewsShowData) {
+            List<entity.Post> posts = state.posts;
+            return SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  return Card(
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 10),
+                    color: AppColors.background,
+                    child: PostElement(
+                        posts[index]), // Truyền bài viết vào widget Post
+                  );
+                },
+                childCount: posts.length, // Số lượng bài viết
+              ),
+            );
+          }
+
+          if (state is NewsError) {
+            // Hiển thị thông báo lỗi
+            return SliverFillRemaining(
+              child: Center(child: Text(state.mess)),
+            );
+          }
+
+          return const SliverFillRemaining(
+            child: Center(child: Text('Chưa có bài viết')),
+          );
+        },
       ),
-    ),
-    // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-    floatingActionButton: FloatingActionButton(
-      // backgroundColor: Colors.black,
-      child: new Icon(Icons.camera),
-      onPressed: () {},
-      shape: new RoundedRectangleBorder(
-          borderRadius: new BorderRadius.circular(50.0)),
-    ),
-  );
+    ];
   }
 
-  SliverAppBar _sliverAppBar(BuildContext context) {
-    return SliverAppBar(
-      // shadowColor: AppColors.primary,
-      backgroundColor: AppColors.secondBackground,
-      // forceMaterialTransparency: true,
-      surfaceTintColor: AppColors.primary,
-      primary: true,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(10))),
-      flexibleSpace: FlexibleSpaceBar(
-        title: Text(
-          "News",
-          style: Theme.of(context).textTheme.titleLarge,
-          textAlign: TextAlign.center,
-        ),
-        background: Container(color: Colors.transparent,),
-      ),
-      expandedHeight: 110,
-      floating: false,
-      pinned: true,
-      leading: Row(
-        // mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(width: 5,),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.home,
-              color: Colors.black,
-              size: 35,
-            ),
-          ),
-        ],
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.chat),
-          onPressed: () {
-            context.go(Routes.chat);
-          },
-        ),
-        IconButton(
-          icon: const Icon(Icons.map),
-          onPressed: () {},
-        ),
-        IconButton(
-          icon: const Icon(Icons.account_box),
-          onPressed: () {},
-        ),
-        IconButton(
-          icon: const Icon(Icons.emergency, color: Colors.red,),
-          onPressed: () {},
-        ),
-        SizedBox(width: 10,)
-      ],
-    );
-  }
-
-  _buildSliverList() => [SliverList(
-        delegate: SliverChildBuilderDelegate(
-          (BuildContext context, int index) {
-            return Card(
-              // shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(30))),
-              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                // elevation: 0,
-                color: AppColors.background, child: Post());
-          },
-          childCount: 20,
-        ),
-      )];
+// _buildSliverList() => [SliverList(
+//       delegate: SliverChildBuilderDelegate(
+//         (BuildContext context, int index) {
+//           return Card(
+//             // shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(30))),
+//             margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+//               // elevation: 0,
+//               color: AppColors.background, child: Post());
+//         },
+//         childCount: 20,
+//       ),
+//     )];
 }

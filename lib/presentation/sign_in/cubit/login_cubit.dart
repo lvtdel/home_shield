@@ -2,8 +2,9 @@ import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:home_shield/domain/auth/use_cases/get_user.dart';
+import 'package:home_shield/domain/auth/use_cases/is_logged_in.dart';
 import 'package:home_shield/domain/auth/use_cases/sign_in.dart';
-import 'package:home_shield/domain/entities/user.dart';
+import 'package:home_shield/domain/auth/entites/user.dart';
 import 'package:home_shield/service_locator.dart';
 import 'package:meta/meta.dart';
 
@@ -14,6 +15,8 @@ class LoginCubit extends Cubit<LoginState> {
 
   login(String email, String password) async {
     UserApp user = UserApp(email: email, password: password);
+
+    emit(LoadingLogin());
 
     try {
       var useCase = sl<SignInUseCase>();

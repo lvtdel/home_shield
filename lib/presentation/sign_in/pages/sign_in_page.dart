@@ -10,8 +10,9 @@ import 'package:home_shield/core/styles/app_shapes.dart';
 import 'package:home_shield/core/styles/app_text_style.dart';
 import 'package:home_shield/core/styles/app_values.dart';
 import 'package:home_shield/domain/auth/use_cases/sign_up.dart';
-import 'package:home_shield/domain/entities/user.dart';
+import 'package:home_shield/domain/auth/entites/user.dart';
 import 'package:home_shield/presentation/sign_in/cubit/login_cubit.dart';
+import 'package:home_shield/presentation/widgets/snack_bar.dart';
 import 'package:home_shield/presentation/widgets/text_field_edit.dart';
 import 'package:home_shield/res/assets_res.dart';
 import 'package:home_shield/service_locator.dart';
@@ -61,10 +62,10 @@ class _SignInPageState extends State<SignInPage> {
       }
 
       if (state is LoadingLogin) {
-        return const Center(
-          child: SizedBox(
-              height: 20, width: 20, child: CircularProgressIndicator()),
-        );
+        return ElevatedButton(
+            onPressed: () {},
+            child: const SizedBox(
+                height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white,)));
       }
 
       if (state is LoginSuccess) {
@@ -84,6 +85,7 @@ class _SignInPageState extends State<SignInPage> {
 
       if (state is LoginError) {
         showSnackBar(context, "state.mess");
+
         return ElevatedButton(
             onPressed: _onLogin,
             child: Text(
@@ -93,20 +95,6 @@ class _SignInPageState extends State<SignInPage> {
       }
 
       return Text("Undefined state ${state.runtimeType}");
-    });
-  }
-
-  void showSnackBar(BuildContext context, String mess) {
-    Future.delayed(const Duration(milliseconds: 100), () {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            mess,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          duration: const Duration(seconds: 2),
-        ),
-      );
     });
   }
 
