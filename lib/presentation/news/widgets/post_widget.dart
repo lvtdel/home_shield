@@ -148,7 +148,7 @@ class _PostElementState extends State<PostElement> {
             Row(
               children: <Widget>[
                 Container(
-                  height: 40.0,
+                  height: 50.0,
                   width: 40.0,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,

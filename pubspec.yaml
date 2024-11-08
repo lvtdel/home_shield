@@ -116,9 +116,12 @@ flutter:
   # see https://flutter.dev/to/font-from-package
   assets:
     - assets/icons/account_icon.png
+    - assets/icons/close_icon.png
     - assets/icons/email_icon.png
     - assets/icons/facebook_icon.png
     - assets/icons/google_icon.png
+    - assets/icons/location_icon.PNG
     - assets/icons/lock_icon.png
     - assets/icons/phone_icon.png
+    - assets/icons/redirect_my_location_icon.png
     - assets/images/logo.png

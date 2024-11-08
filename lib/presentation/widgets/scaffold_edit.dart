@@ -83,7 +83,7 @@ class ScaffoldEdit extends StatelessWidget {
         ),
         IconButton(
           icon: const Icon(Icons.map),
-          onPressed: () {},
+          onPressed: () {context.push(Routes.map);},
         ),
         IconButton(
           icon: const Icon(Icons.account_box),

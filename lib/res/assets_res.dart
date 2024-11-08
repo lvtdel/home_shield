@@ -9,10 +9,13 @@ class AssetsRes {
   static const String PLUGIN_NAME = 'home_shield';
   static const String PLUGIN_VERSION = '1.0.0+1';
   static const String ACCOUNT_ICON = 'assets/icons/account_icon.png';
+  static const String CLOSE_ICON = 'assets/icons/close_icon.png';
   static const String EMAIL_ICON = 'assets/icons/email_icon.png';
   static const String FACEBOOK_ICON = 'assets/icons/facebook_icon.png';
   static const String GOOGLE_ICON = 'assets/icons/google_icon.png';
+  static const String LOCATION_ICON = 'assets/icons/location_icon.PNG';
   static const String LOCK_ICON = 'assets/icons/lock_icon.png';
   static const String PHONE_ICON = 'assets/icons/phone_icon.png';
+  static const String REDIRECT_MY_LOCATION_ICON = 'assets/icons/redirect_my_location_icon.png';
   static const String LOGO = 'assets/images/logo.png';
 }

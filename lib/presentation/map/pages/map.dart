@@ -1,8 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:home_shield/core/routing/app_router.dart';
+import 'package:home_shield/core/styles/app_values.dart';
+import 'package:home_shield/res/assets_res.dart';
+
 // import 'package:google_maps_yt/consts.dart';
 import 'package:location/location.dart';
 
@@ -14,22 +19,35 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
-  Location _locationController = new Location();
+  final Location _locationController = Location();
+  BitmapDescriptor? _customIcon;
 
   final Completer<GoogleMapController> _mapController =
-  Completer<GoogleMapController>();
+      Completer<GoogleMapController>();
 
-  static const LatLng _pGooglePlex = LatLng(37.4223, -122.0848);
-  static const LatLng _pApplePark = LatLng(37.3346, -122.0090);
-  LatLng? _currentP = null;
+  static const LatLng _mySchool = LatLng(15.97548334897396, 108.25291027532116);
+  static const LatLng _friend1 = LatLng(15.981817, 108.255601);
+  static const LatLng _police = LatLng(15.985805915717977, 108.24078619046364);
+
+  // static const LatLng _pApplePark = LatLng(37.3346, -122.0090);
+  LatLng? _currentP;
 
   Map<PolylineId, Polyline> polylines = {};
 
   @override
   void initState() {
     super.initState();
+    _loadCustomIcon();
     getLocationUpdates().then(
-          (_) => {
+      (_) {
+        if (_currentP != null) {
+          _cameraToPosition(_currentP!);
+        }
+
+        // setState(() {
+        //
+        // });
+
         // getPolylinePoints().then((coordinates) => {
         //   generatePolyLineFromPoints(coordinates),
         // }),
@@ -37,66 +55,131 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
+  Future<void> _loadCustomIcon() async {
+    final icon = await BitmapDescriptor.asset(
+      const ImageConfiguration(size: Size(50, 50)),
+      AssetsRes.LOCATION_ICON,
+    );
+    // _customIcon = icon;
+    setState(() {
+      _customIcon = icon;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _currentP == null
-          ? const Center(
-        child: Text("Loading..."),
-      )
-          : GoogleMap(
-        onMapCreated: ((GoogleMapController controller) =>
-            _mapController.complete(controller)),
-        initialCameraPosition: CameraPosition(
-          target: _pGooglePlex,
-          zoom: 13,
-        ),
-        markers: {
-          Marker(
-            markerId: MarkerId("_currentLocation"),
-            icon: BitmapDescriptor.defaultMarker,
-            position: _currentP!,
+      body: _mapBody(),
+      floatingActionButton: Stack(
+        alignment: Alignment.bottomRight,
+        children: [
+          Positioned(
+            bottom: 100.0,
+            right: 0,
+            child: FloatingActionButton(
+              onPressed: () {
+                _cameraToMyPosition();
+              },
+              child: Image.asset(AssetsRes.REDIRECT_MY_LOCATION_ICON),
+            ),
           ),
-          Marker(
-              markerId: MarkerId("_sourceLocation"),
-              icon: BitmapDescriptor.defaultMarker,
-              position: _pGooglePlex),
-          Marker(
-              markerId: MarkerId("_destionationLocation"),
-              icon: BitmapDescriptor.defaultMarker,
-              position: _pApplePark)
-        },
-        polylines: Set<Polyline>.of(polylines.values),
+          // Positioned(
+          //   top: 60,
+          //   right: AppPadding.p10,
+          //   child: FloatingActionButton(
+          //     onPressed: () {
+          //       context.pop();
+          //       print("pop");
+          //     },
+          //     child: Image.asset(AssetsRes.CLOSE_ICON),
+          //   ),
+          // ),
+        ],
       ),
+    );
+  }
+
+  _mapBody() {
+    // return Placeholder();
+    return GoogleMap(
+      onMapCreated: ((GoogleMapController controller) =>
+          _mapController.complete(controller)),
+      initialCameraPosition: const CameraPosition(
+        target: _mySchool,
+        zoom: 13,
+      ),
+      markers: {
+        Marker(
+            markerId: const MarkerId("_currentLocation"),
+            icon: _customIcon ??
+                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+            position: _currentP ?? _mySchool,
+            infoWindow: InfoWindow(
+              title: 'My location', // Tiêu đề của nhãn
+              // snippet: '', // Mô tả phụ
+            )),
+        const Marker(
+          markerId: MarkerId("_sourceLocation"),
+          icon: BitmapDescriptor.defaultMarker,
+          position: _mySchool,
+          infoWindow: InfoWindow(
+            title: 'My School', // Tiêu đề của nhãn
+            snippet: 'Trường ĐH CNTT và TT Việt Hàn', // Mô tả phụ
+          ),
+        ),
+        const Marker(
+          markerId: MarkerId("_police"),
+          icon: BitmapDescriptor.defaultMarker,
+          position: _police,
+          infoWindow: InfoWindow(
+            title: 'Công an Phường Hoà Quý', // Tiêu đề của nhãn
+            // snippet: 'Trường ĐH CNTT và TT Việt Hàn', // Mô tả phụ
+          ),
+        ),
+        Marker(
+          markerId: MarkerId("_friend1"),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+          position: _friend1,
+          infoWindow: InfoWindow(
+            title: 'Minh Quang', // Tiêu đề của nhãn
+            // snippet: 'Trường ĐH CNTT và TT Việt Hàn', // Mô tả phụ
+          ),
+        ),
+      },
+      polylines: Set<Polyline>.of(polylines.values),
     );
   }
 
   Future<void> _cameraToPosition(LatLng pos) async {
     final GoogleMapController controller = await _mapController.future;
-    CameraPosition _newCameraPosition = CameraPosition(
+    CameraPosition newCameraPosition = CameraPosition(
       target: pos,
       zoom: 13,
     );
     await controller.animateCamera(
-      CameraUpdate.newCameraPosition(_newCameraPosition),
+      CameraUpdate.newCameraPosition(newCameraPosition),
     );
   }
 
-  Future<void> getLocationUpdates() async {
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
+  _cameraToMyPosition() {
+    _cameraToPosition(_currentP!);
+  }
 
-    _serviceEnabled = await _locationController.serviceEnabled();
-    if (_serviceEnabled) {
-      _serviceEnabled = await _locationController.requestService();
+  Future<void> getLocationUpdates() async {
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
+
+    serviceEnabled = await _locationController.serviceEnabled();
+    if (serviceEnabled) {
+      serviceEnabled = await _locationController.requestService();
     } else {
       return;
     }
 
-    _permissionGranted = await _locationController.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await _locationController.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
+    permissionGranted = await _locationController.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await _locationController.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) {
         return;
       }
     }
@@ -108,7 +191,7 @@ class _MapPageState extends State<MapPage> {
         setState(() {
           _currentP =
               LatLng(currentLocation.latitude!, currentLocation.longitude!);
-          _cameraToPosition(_currentP!);
+          // _cameraToPosition(_currentP!);
         });
       }
     });
@@ -143,5 +226,11 @@ class _MapPageState extends State<MapPage> {
     setState(() {
       polylines[id] = polyline;
     });
+  }
+
+  @override
+  void dispose() {
+    _locationController.onLocationChanged.drain();
+    super.dispose();
   }
 }

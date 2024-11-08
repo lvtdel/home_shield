@@ -20,7 +20,7 @@ class AppRouter {
       // initialLocation: Routes.chat,
       // initialLocation: Routes.news,
       //   initialLocation: Routes.signIn,
-      initialLocation: Routes.map,
+      initialLocation: Routes.news,
       routes: [
         GoRoute(path: Routes.splash, builder: (_, __) => SplashPage()),
         GoRoute(
