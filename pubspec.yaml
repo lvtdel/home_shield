@@ -42,6 +42,7 @@ dependencies:
   google_maps_flutter:
   location:
   flutter_polyline_points:
+  collection:
 #  mapbox_maps_flutter:
 
 
@@ -50,8 +51,12 @@ dependencies:
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
+  integration_test:
+    sdk: flutter
   flutter_test:
     sdk: flutter
+
+#  integration_test:
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -124,4 +129,5 @@ flutter:
     - assets/icons/lock_icon.png
     - assets/icons/phone_icon.png
     - assets/icons/redirect_my_location_icon.png
+    - assets/images/friend.png
     - assets/images/logo.png

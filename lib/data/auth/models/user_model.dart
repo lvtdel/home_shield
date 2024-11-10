@@ -3,7 +3,7 @@ import 'package:home_shield/domain/auth/entites/user.dart';
 
 class UserModel {
   String? id;
-  final String email;
+  final String? email;
   final String? password;
   final String? name;
   final String? phoneNumber;

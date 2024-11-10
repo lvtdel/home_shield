@@ -4,17 +4,19 @@ import 'package:home_shield/domain/auth/use_cases/sign_up.dart';
 import 'package:home_shield/domain/auth/entites/user.dart';
 import 'package:home_shield/firebase_options.dart';
 import 'package:home_shield/service_locator.dart';
+import 'package:integration_test/integration_test.dart';
 
 
-void main() async {
+void main() {
   // Thiết lập môi trường kiểm thử
   setUpAll(() async {
-    TestWidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.windows);
+    // TestWidgetsFlutterBinding.ensureInitialized();
+    IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
     await initializeDependencies();
   });
 
-  test("Sign up", () async {
+  testWidgets("Sign up", (_) async {
     // Lấy SignupUseCase từ DI
     var signupUseCase = sl<SignupUseCase>();
 

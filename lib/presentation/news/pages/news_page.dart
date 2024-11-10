@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:home_shield/core/routing/app_router.dart';
-import 'package:home_shield/core/routing/route_path.dart';
 import 'package:home_shield/core/styles/app_colors.dart';
-import 'package:home_shield/domain/post/entities/post.dart' as entity;
+import 'package:home_shield/domain/post/entities/post.dart';
 import 'package:home_shield/presentation/news/bloc/news_bloc.dart';
 import 'package:home_shield/presentation/news/widgets/post_widget.dart';
 import 'package:home_shield/presentation/widgets/scaffold_edit.dart';
+import 'package:home_shield/res/assets_res.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({super.key});
@@ -49,7 +47,20 @@ class _NewsPageState extends State<NewsPage> {
           }
 
           if (state is NewsShowData) {
-            List<entity.Post> posts = state.posts;
+            List<Post> posts = state.posts;
+
+            if (posts.isEmpty) {
+              return SliverToBoxAdapter(child: Padding(padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      Image.asset(AssetsRes.FRIEND, height: 200,),
+                      Text("Welcome to Home Shield app, add friends to share moments.",
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ],
+                  )),);
+            }
+
             return SliverList(
               delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {

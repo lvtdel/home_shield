@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:home_shield/domain/post/entities/comment.dart';
 import 'package:home_shield/domain/post/entities/post.dart';
 import 'package:home_shield/domain/post/repository/post_repository.dart';
+import 'package:home_shield/domain/post/use_cases/get_post.dart';
 import 'package:home_shield/service_locator.dart';
 import 'package:meta/meta.dart';
 
@@ -12,7 +13,6 @@ part 'news_event.dart';
 part 'news_state.dart';
 
 class NewsBloc extends Bloc<NewsEvent, NewsState> {
-  final PostRepository postRepository = sl<PostRepository>();
 
   NewsBloc() : super(NewsInitial()) {
     on<LoadData>(_onLoadData);
@@ -21,7 +21,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
   _onLoadData(LoadData event, Emitter<NewsState> emit) async {
     emit(NewsLoading());
 
-    var data = await postRepository.getFriendPosts();
+    var data = await sl<GetPostUseCase>().call();
     data.fold((e) {
       emit(NewsError(e));
     }, (data) {
