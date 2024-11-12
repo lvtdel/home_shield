@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:home_shield/core/routing/route_path.dart';
 import 'package:home_shield/domain/chat/entities/group.dart';
+import 'package:home_shield/presentation/call/pages/call_page.dart';
 import 'package:home_shield/presentation/chat/bloc/chat_cubit.dart';
 import 'package:home_shield/presentation/chat/bloc/contact_cubit.dart';
 import 'package:home_shield/presentation/chat/pages/chat_page.dart';
@@ -58,5 +59,6 @@ class AppRouter {
                 )),
         // GoRoute(path: Routes.map, builder: (_, __) => FullMap()),
         GoRoute(path: Routes.map, builder: (_, __) => MapPage()),
+        GoRoute(path: Routes.call, builder: (_, __) => CallPage()),
       ]);
 }

@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
+import 'package:home_shield/core/routing/app_router.dart';
+import 'package:home_shield/core/routing/route_path.dart';
 import 'package:home_shield/core/styles/app_colors.dart';
 import 'package:home_shield/core/styles/app_shapes.dart';
 import 'package:home_shield/core/styles/app_values.dart';
@@ -104,7 +107,9 @@ class _ChatPageState extends State<ChatPage> {
         const SizedBox(
           width: 20,
         ),
-        circleContainer(context, Icons.call_rounded),
+        circleContainer(context, Icons.call_rounded, onTap: () {
+          context.push(Routes.call);
+        }),
       ],
       leading: CircleAvatar(
         backgroundImage: NetworkImage(

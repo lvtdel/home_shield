@@ -6,4 +6,5 @@ class Routes {
   static const news = "/news";
   static const chat = "/chat/:id";
   static const map = "/map";
+  static const call = "/call";
 }
