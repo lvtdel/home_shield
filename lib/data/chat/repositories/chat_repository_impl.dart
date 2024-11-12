@@ -15,8 +15,8 @@ class ChatRepositoryImpl extends ChatRepository {
 
   @override
   Future<Either<String, List<Group>>> getContacts() async {
-    // String userId = FirebaseAuth.instance.currentUser!.uid;
-    String userId = "qdsH5jU73JOrIMkwOB8BXKZ2QRy1";
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    // String userId = "qdsH5jU73JOrIMkwOB8BXKZ2QRy1";
 
     return (await _chatFirebaseService.getContacts(userId)).fold((e) => Left(e),
         (groupModels) {
