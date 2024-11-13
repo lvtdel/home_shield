@@ -42,7 +42,10 @@ dependencies:
   google_maps_flutter:
   location:
   flutter_polyline_points:
-#  mapbox_maps_flutter:
+  collection:
+  livekit_client:
+  geolocator:
+  #  mapbox_maps_flutter:
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -50,6 +53,8 @@ dependencies:
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
+  integration_test:
+    sdk: flutter
   flutter_test:
     sdk: flutter
 
@@ -120,8 +125,10 @@ flutter:
     - assets/icons/email_icon.png
     - assets/icons/facebook_icon.png
     - assets/icons/google_icon.png
+    - assets/icons/hand_off_icon.png
     - assets/icons/location_icon.PNG
     - assets/icons/lock_icon.png
     - assets/icons/phone_icon.png
     - assets/icons/redirect_my_location_icon.png
+    - assets/images/friend.png
     - assets/images/logo.png

@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:home_shield/data/auth/models/user_model.dart';
+import 'package:home_shield/data/auth/source/auth_firebase_service.dart';
 import 'package:home_shield/data/post/models/comment_model.dart';
 import 'package:home_shield/data/post/models/post_model.dart';
 import 'package:home_shield/domain/post/entities/post.dart';
+import 'package:home_shield/service_locator.dart';
 
 abstract class PostFirebaseService {
   Future<Either<String, List<PostModel>>> getFriendPosts(String userId);
@@ -39,13 +42,18 @@ class PostFirebaseServiceImpl extends PostFirebaseService {
       List<String> groupIds = await friendList(userId);
       print("Friend: $groupIds");
 
+      if (groupIds.isEmpty) {
+        groupIds.add(FirebaseAuth.instance.currentUser!.uid);
+      }
+
       var posts = await FirebaseFirestore.instance
           .collection("posts")
           .where('user_id', whereIn: groupIds)
           .get();
 
       // Dùng Future.wait để lấy comments cho mỗi post đồng thời
-      List<PostModel> postsWithComments = await Future.wait(posts.docs.map((postDoc) async {
+      List<PostModel> postsWithComments =
+          await Future.wait(posts.docs.map((postDoc) async {
         // Lấy thông tin của post
         PostModel post = PostModel.fromJson(postDoc.data());
         String postId = postDoc.id;
@@ -79,14 +87,15 @@ class PostFirebaseServiceImpl extends PostFirebaseService {
   Future<List<String>> friendList(String userId) async {
     var user =
         await FirebaseFirestore.instance.collection('users').doc(userId).get();
-    List<String> groupIds = (user.get("group_ids") as List<dynamic>?)
-            ?.map((e) => e.toString())
-            .toList() ??
-        List.empty();
+    // List<String> groupIds = (user.get("group_ids") as List<dynamic>?)
+    //         ?.map((e) => e.toString())
+    //         .toList() ??
+    //     List.empty();
+    List<String> groupIds = List.from(user.get('group_ids'));
 
     if (groupIds.isEmpty) {
       print("FirebaseService return empty groupIds");
-      return List<String>.empty();
+      return [];
     }
     Set<String> friendIds = {};
 

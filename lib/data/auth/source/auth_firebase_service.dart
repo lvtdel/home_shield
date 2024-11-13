@@ -7,29 +7,28 @@ import 'package:home_shield/domain/auth/entites/user.dart';
 abstract class AuthFirebaseService {
   Future<Either<String, UserApp>> signup(UserModel user);
 
-  Future<Either> getAges();
-
   Future<Either> signIn(UserModel user);
 
   Future<bool> isLoggedIn();
 
-  Future<Either> getUser();
+  Future<Either> getCurrentUser();
+
+  Future<Either<String, UserModel>> getUser(String userId);
 }
 
 class AuthFirebaseServiceImpl extends AuthFirebaseService {
+  var userCollection = FirebaseFirestore.instance.collection('users');
+
   @override
   Future<Either<String, UserApp>> signup(UserModel user) async {
     try {
       var returnedData = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
-              email: user.email, password: user.password!);
+              email: user.email!, password: user.password!);
 
       user.id = returnedData.user!.uid;
 
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(returnedData.user!.uid)
-          .set(user.toMap());
+      userCollection.doc(returnedData.user!.uid).set(user.toMap());
 
       return Right(user.toEntity());
     } on FirebaseAuthException catch (e) {
@@ -45,22 +44,10 @@ class AuthFirebaseServiceImpl extends AuthFirebaseService {
   }
 
   @override
-  Future<Either> getAges() async {
-    try {
-      var returnData =
-          await FirebaseFirestore.instance.collection('Ages').get();
-
-      return Right(returnData.docs);
-    } on Exception catch (e) {
-      return const Left('Please try again');
-    }
-  }
-
-  @override
   Future<Either> signIn(UserModel user) async {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: user.email, password: user.password!);
+          email: user.email!, password: user.password!);
 
       return const Right('Sign in was successfull');
     } on FirebaseAuthException catch (e) {
@@ -86,7 +73,7 @@ class AuthFirebaseServiceImpl extends AuthFirebaseService {
   }
 
   @override
-  Future<Either> getUser() async {
+  Future<Either> getCurrentUser() async {
     try {
       var currentUser = FirebaseAuth.instance.currentUser;
       print("Current user: $currentUser");
@@ -98,6 +85,20 @@ class AuthFirebaseServiceImpl extends AuthFirebaseService {
       return Right(userData);
     } catch (e) {
       return const Left('Please try again');
+    }
+  }
+
+  @override
+  Future<Either<String, UserModel>> getUser(String userId) async {
+    try {
+      var data = await userCollection.doc(userId).get();
+      if (data.exists && data.data() != null) {
+        return Right(UserModel.fromMap(data.data()!));
+      } else {
+        return const Left("User not found!");
+      }
+    } catch (e) {
+      return const Left("Error fetching user!");
     }
   }
 }

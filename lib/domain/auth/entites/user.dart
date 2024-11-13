@@ -1,6 +1,6 @@
 class UserApp {
   final String? id;
-  final String email;
+  final String? email;
   final String? password;
   final String? name;
   final String? phoneNumber;
@@ -10,7 +10,7 @@ class UserApp {
   UserApp(
       {this.id,
       this.name,
-      required this.email,
+       this.email,
       this.password,
       this.phoneNumber,
       this.bloodType,

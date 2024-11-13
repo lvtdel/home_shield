@@ -1,17 +1,46 @@
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
+import 'package:home_shield/core/routing/app_router.dart';
+import 'package:home_shield/core/routing/route_path.dart';
 import 'package:home_shield/core/styles/app_colors.dart';
 import 'package:home_shield/core/styles/app_shapes.dart';
 import 'package:home_shield/core/styles/app_values.dart';
+import 'package:home_shield/domain/chat/entities/group.dart';
+import 'package:home_shield/domain/chat/entities/message.dart';
+import 'package:home_shield/presentation/chat/bloc/chat_cubit.dart';
 import 'package:home_shield/presentation/chat/widgets/circle_item.dart';
 import 'package:home_shield/presentation/chat/widgets/text_field_edit.dart';
 import 'package:home_shield/presentation/widgets/scaffold_edit.dart';
 
-class ChatPage extends StatelessWidget {
-  const ChatPage({super.key});
+class ChatPage extends StatefulWidget {
+  const ChatPage({super.key, required this.group});
+
+  final Group group;
+
+  @override
+  State<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
+  @override
+  void initState() {
+    context.read<ChatCubit>().loadStreamMess(widget.group.id!);
+    super.initState();
+  }
+
+  Future<bool> _onSend(String content) async {
+    Message message = Message(content: content, createdAt: Timestamp.now());
+    String groupId = widget.group.id!;
+
+    return context.read<ChatCubit>().sendMess(message, groupId);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +61,6 @@ class ChatPage extends StatelessWidget {
               slivers: [
                 _sliverAppBar(context),
                 _body(context),
-
               ],
             ),
           ),
@@ -52,34 +80,47 @@ class ChatPage extends StatelessWidget {
             const SizedBox(
               width: AppSize.s18,
             ),
-            const Flexible(
+            Flexible(
               fit: FlexFit.loose,
-              child: SizedBox(height: AppSize.s45, child: TextFieldEdit()),
+              child: SizedBox(
+                  child: TextFieldEdit(
+                onSend: _onSend,
+              )),
             )
           ],
         ));
   }
 
-  AppBar _appBar(BuildContext context) {
-    return AppBar(
-      // toolbarHeight: 100,
+  Widget _sliverAppBar(BuildContext context) {
+    return SliverAppBar(
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(11),
+        child: Divider(
+          color: AppColors.blackOpacity,
+          height: 1,
+        ),
+      ),
+      pinned: true,
+      backgroundColor: AppColors.background,
       actions: [
         circleContainer(context, Icons.videocam_rounded),
         const SizedBox(
           width: 20,
         ),
-        circleContainer(context, Icons.call_rounded),
+        circleContainer(context, Icons.call_rounded, onTap: () {
+          context.push(Routes.call);
+        }),
       ],
-      leading: const CircleAvatar(
+      leading: CircleAvatar(
         backgroundImage: NetworkImage(
-          "https://imgt.taimienphi.vn/cf/Images/tt/2021/8/20/top-anh-dai-dien-dep-chat-56.jpg",
+          widget.group.image,
         ),
       ),
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Thám tử lừng danh conan",
+            widget.group.name,
             style: Theme.of(context).textTheme.titleSmall,
           ),
           Text(
@@ -88,83 +129,77 @@ class ChatPage extends StatelessWidget {
           )
         ],
       ),
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(21), // Kích thước của bottom
-        child: Divider(
-          color: AppColors.blackOpacity,
-          height: 1,
-        ),
-      ),
-    );
-  }
-
-  Widget _sliverAppBar(BuildContext context) {
-    return SliverPadding(
-      padding: const EdgeInsets.symmetric(vertical: 00),
-      sliver: SliverAppBar(
-        // floating: false,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(11), // Kích thước của bottom
-          child: Divider(
-            color: AppColors.blackOpacity,
-            height: 1,
-          ),
-        ),
-        pinned: true,
-        backgroundColor: AppColors.background,
-        actions: [
-          circleContainer(context, Icons.videocam_rounded),
-          const SizedBox(
-            width: 20,
-          ),
-          circleContainer(context, Icons.call_rounded),
-        ],
-        leading: const CircleAvatar(
-          backgroundImage: NetworkImage(
-            "https://imgt.taimienphi.vn/cf/Images/tt/2021/8/20/top-anh-dai-dien-dep-chat-56.jpg",
-          ),
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Thám tử lừng danh conan",
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            Text(
-              "Đang hoạt động",
-              style: Theme.of(context).textTheme.bodySmall,
-            )
-          ],
-        ),
-        // bottom: PreferredSize(preferredSize: Size.fromHeight(1),
-        //     child: Divider(color: AppColors.blackOpacity,)),
-      ),
+      // bottom: PreferredSize(preferredSize: Size.fromHeight(1),
+      //     child: Divider(color: AppColors.blackOpacity,)),
     );
   }
 
   Widget _body(BuildContext context) {
     return SliverToBoxAdapter(
       child: Container(
-        height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - 120, // Điều chỉnh chiều cao
-        child: ListView.builder(
-          reverse: true, // Đảo ngược chiều cuộn
-          itemCount: 20, // Thay đổi thành số lượng tin nhắn thực tế
-          itemBuilder: (BuildContext context, int index) {
-            final isMessageSend = Random.secure().nextBool();
+        height: MediaQuery.of(context).size.height -
+            AppBar().preferredSize.height -
+            120,
+        // Điều chỉnh chiều cao
+        child: BlocBuilder<ChatCubit, ChatState>(
+          builder: (context, state) {
+            if (state is ChatSuccess) {
+              return StreamBuilder<List<Message>>(
+                  stream: state.streamMessList,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
 
-            if (isMessageSend) {
-              return _messageSend(context); // Gọi hàm tạo tin nhắn gửi
-            } else {
-              return _messageReceive(context); // Gọi hàm tạo tin nhắn nhận
+                    if (snapshot.hasError) {
+                      return Text("Error: ${snapshot.error}");
+                    }
+
+                    if (snapshot.hasData) {
+                      List<Message> messages = snapshot.data ?? List.empty();
+
+                      return ListView.builder(
+                        reverse: true,
+                        itemCount: messages.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final isMessageSend = messages[index].userApp!.id ==
+                              FirebaseAuth.instance.currentUser!.uid;
+
+                          if (isMessageSend) {
+                            return _messageSend(messages[index].content,
+                                context); // Gọi hàm tạo tin nhắn gửi
+                          } else {
+                            return _messageReceive(messages[index].content,
+                                context); // Gọi hàm tạo tin nhắn nhận
+                          }
+                        },
+                      );
+                    }
+
+                    return const Text("Nothing data to here");
+                  });
             }
+
+            if (state is ChatError) {
+              return Text("Error: ${state.mess}");
+            }
+
+            return const SizedBox(
+              width: 20,
+              height: 20,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
           },
         ),
       ),
     );
   }
 
-  Widget _messageSend(BuildContext context) {
+  Widget _messageSend(String mess, BuildContext context) {
     return Align(
       alignment: AlignmentDirectional.centerEnd,
       child: IntrinsicWidth(
@@ -178,15 +213,18 @@ class ChatPage extends StatelessWidget {
           alignment: AlignmentDirectional.center,
           constraints: const BoxConstraints(maxWidth: AppSize.s300),
           child: Text(
-            "Chiều này",
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
+            mess,
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: Colors.white),
           ),
         ),
       ),
     );
   }
 
-  Widget _messageReceive(BuildContext context) {
+  Widget _messageReceive(String mess, BuildContext context) {
     return Align(
       alignment: AlignmentDirectional.centerStart,
       child: IntrinsicWidth(
@@ -200,7 +238,7 @@ class ChatPage extends StatelessWidget {
           alignment: AlignmentDirectional.center,
           constraints: const BoxConstraints(maxWidth: AppSize.s300),
           child: Text(
-            "Chiều này có vụ án mới Chiều nay này có vụ án mới Chiều này có vụ án mới Chiều này có vụ án mới ",
+            mess,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
         ),

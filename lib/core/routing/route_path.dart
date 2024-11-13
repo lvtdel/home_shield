@@ -4,6 +4,7 @@ class Routes {
   static const signIn = "/signIn";
   static const contact = "/contact";
   static const news = "/news";
-  static const chat = "/chat";
+  static const chat = "/chat/:id";
   static const map = "/map";
+  static const call = "/call";
 }

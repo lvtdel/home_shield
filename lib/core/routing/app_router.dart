@@ -1,6 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:home_shield/core/routing/route_path.dart';
+import 'package:home_shield/domain/chat/entities/group.dart';
+import 'package:home_shield/presentation/call/pages/call_page.dart';
+import 'package:home_shield/presentation/chat/bloc/chat_cubit.dart';
+import 'package:home_shield/presentation/chat/bloc/contact_cubit.dart';
 import 'package:home_shield/presentation/chat/pages/chat_page.dart';
 import 'package:home_shield/presentation/chat/pages/contact_page.dart';
 import 'package:home_shield/presentation/map/pages/goong_map.dart';
@@ -20,14 +24,14 @@ class AppRouter {
       // initialLocation: Routes.chat,
       // initialLocation: Routes.news,
       //   initialLocation: Routes.signIn,
-      initialLocation: Routes.news,
+      initialLocation: Routes.splash,
       routes: [
         GoRoute(path: Routes.splash, builder: (_, __) => SplashPage()),
         GoRoute(
             path: Routes.news,
             builder: (_, __) => BlocProvider(
                   create: (context) => NewsBloc(),
-                  child: NewsPage(),
+                  child: const NewsPage(),
                 )),
         GoRoute(
             path: Routes.signUp,
@@ -41,9 +45,20 @@ class AppRouter {
                   create: (context) => LoginCubit(),
                   child: SignInPage(),
                 )),
-        GoRoute(path: Routes.contact, builder: (_, __) => ContactPage()),
-        GoRoute(path: Routes.chat, builder: (_, __) => ChatPage()),
+        GoRoute(
+            path: Routes.contact,
+            builder: (_, __) => BlocProvider(
+                  create: (context) => ContactCubit(),
+                  child: const ContactPage(),
+                )),
+        GoRoute(
+            path: Routes.chat,
+            builder: (_, state) => BlocProvider(
+                  create: (context) => ChatCubit(),
+                  child: ChatPage(group: state.extra as Group),
+                )),
         // GoRoute(path: Routes.map, builder: (_, __) => FullMap()),
         GoRoute(path: Routes.map, builder: (_, __) => MapPage()),
+        GoRoute(path: Routes.call, builder: (_, __) => CallPage()),
       ]);
 }
