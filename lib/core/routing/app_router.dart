@@ -7,6 +7,11 @@ import 'package:home_shield/presentation/chat/bloc/chat_cubit.dart';
 import 'package:home_shield/presentation/chat/bloc/contact_cubit.dart';
 import 'package:home_shield/presentation/chat/pages/chat_page.dart';
 import 'package:home_shield/presentation/chat/pages/contact_page.dart';
+import 'package:home_shield/presentation/emergency/cubit/emergency_cubit.dart';
+import 'package:home_shield/presentation/emergency/pages/emergency_page.dart';
+import 'package:home_shield/presentation/group_manage/cubit/group_cubit.dart';
+import 'package:home_shield/presentation/group_manage/page/create_group.dart';
+import 'package:home_shield/presentation/map/cubit/map_cubit.dart';
 import 'package:home_shield/presentation/map/pages/goong_map.dart';
 import 'package:home_shield/presentation/map/pages/map.dart';
 import 'package:home_shield/presentation/news/bloc/news_bloc.dart';
@@ -58,7 +63,24 @@ class AppRouter {
                   child: ChatPage(group: state.extra as Group),
                 )),
         // GoRoute(path: Routes.map, builder: (_, __) => FullMap()),
-        GoRoute(path: Routes.map, builder: (_, __) => MapPage()),
+        GoRoute(
+            path: Routes.map,
+            builder: (_, __) => BlocProvider(
+                  create: (context) => MapCubit(),
+                  child: MapPage(),
+                )),
         GoRoute(path: Routes.call, builder: (_, __) => CallPage()),
+        GoRoute(
+            path: Routes.createGroup,
+            builder: (_, __) => BlocProvider(
+                  create: (context) => GroupCubit(),
+                  child: CreateGroupPage(),
+                )),
+        GoRoute(
+            path: Routes.emergency,
+            builder: (_, __) => BlocProvider(
+                  create: (context) => EmergencyCubit(),
+                  child: EmergencyPage(),
+                )),
       ]);
 }

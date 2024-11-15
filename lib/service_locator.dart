@@ -3,6 +3,9 @@ import 'package:home_shield/data/auth/repositories/auth_repository_impl.dart';
 import 'package:home_shield/data/auth/source/auth_firebase_service.dart';
 import 'package:home_shield/data/chat/repositories/chat_repository_impl.dart';
 import 'package:home_shield/data/chat/source/chat_firebase_service.dart';
+import 'package:home_shield/data/emergency/repositories/emergency_repository.dart';
+import 'package:home_shield/data/group/repositories/group_repository.dart';
+import 'package:home_shield/data/map/repositories/map_repository.dart';
 import 'package:home_shield/data/post/repositories/post_repository_impl.dart';
 import 'package:home_shield/data/post/source/post_firebase_service.dart';
 import 'package:home_shield/domain/auth/repository/auth.dart';
@@ -17,6 +20,8 @@ import 'package:home_shield/domain/chat/use_case/get_message.dart';
 import 'package:home_shield/domain/chat/use_case/get_message.dart';
 import 'package:home_shield/domain/chat/use_case/send_message.dart';
 import 'package:home_shield/domain/chat/use_case/send_message.dart';
+import 'package:home_shield/domain/emergency/use_case/send_location.dart';
+import 'package:home_shield/domain/emergency/use_case/send_location.dart';
 import 'package:home_shield/domain/post/repository/post_repository.dart';
 import 'package:home_shield/domain/post/use_cases/get_post.dart';
 
@@ -32,6 +37,9 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<AuthRepository>(AuthRepositoryImpl());
   sl.registerSingleton<PostRepository>(PostRepositoryImpl());
   sl.registerSingleton<ChatRepository>(ChatRepositoryImpl());
+  sl.registerSingleton<GroupRepository>(GroupRepositoryImpl());
+  sl.registerSingleton<EmergencyRepository>(EmergencyRepositoryImpl());
+  sl.registerSingleton<MapRepository>(MapRepositoryImpl());
 
   // Use case
   sl.registerSingleton<SignupUseCase>(SignupUseCase());
@@ -44,4 +52,5 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<GetContactUseCase>(GetContactUseCase());
   sl.registerSingleton<GetMessageUseCase>(GetMessageUseCase());
   sl.registerSingleton<SendMessageUseCase>(SendMessageUseCase());
+  sl.registerSingleton<SendLocationUseCase>(SendLocationUseCase());
 }

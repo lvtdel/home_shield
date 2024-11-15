@@ -44,7 +44,7 @@ class ScaffoldEdit extends StatelessWidget {
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(10))),
       flexibleSpace: FlexibleSpaceBar(
         title: Text(
-          "News",
+          _getPageName(context),
           style: Theme.of(context).textTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
@@ -59,7 +59,7 @@ class ScaffoldEdit extends StatelessWidget {
         // mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SizedBox(
+          const SizedBox(
             width: 5,
           ),
           IconButton(
@@ -76,9 +76,9 @@ class ScaffoldEdit extends StatelessWidget {
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.chat),
+          icon: const Icon(Icons.account_box),
           onPressed: () {
-            context.go(Routes.contact);
+            context.push(Routes.contact);
           },
         ),
         IconButton(
@@ -86,7 +86,7 @@ class ScaffoldEdit extends StatelessWidget {
           onPressed: () {context.push(Routes.map);},
         ),
         IconButton(
-          icon: const Icon(Icons.account_box),
+          icon: const Icon(Icons.toc),
           onPressed: () {},
         ),
         IconButton(
@@ -94,13 +94,26 @@ class ScaffoldEdit extends StatelessWidget {
             Icons.emergency,
             color: Colors.red,
           ),
-          onPressed: () {},
+          onPressed: () {
+            context.push(Routes.emergency);
+          },
         ),
         const SizedBox(
           width: 10,
         )
       ],
     );
+  }
+
+  String _getPageName(BuildContext context) {
+     switch (GoRouterState.of(context).uri.toString()) {
+      case Routes.news:
+        return "Home";
+       case Routes.contact:
+         return "Contact";
+    }
+
+    return "";
   }
 
 // _buildList() =>

@@ -33,7 +33,9 @@ class _ContactPageState extends State<ContactPage> {
     return ScaffoldEdit(
       bodySlivers: <Widget>[_contactAvatarSliver(context), _contactList()],
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          context.push(Routes.createGroup);
+        },
         child: const Icon(Icons.add),
       ),
     );
@@ -55,7 +57,12 @@ class _ContactPageState extends State<ContactPage> {
                   return Container(
                     margin: const EdgeInsets.symmetric(horizontal: 10),
                     // padding: const EdgeInsets.all(8.0),
-                    child: _avatar(groups[index].image, AppSize.s80, context),
+                    child: GestureDetector(
+                        onTap: () {
+                          _onClickGroup(groups[index]);
+                        },
+                        child:
+                            _avatar(groups[index].image, AppSize.s70, context)),
                   );
                 });
           }
@@ -96,15 +103,9 @@ class _ContactPageState extends State<ContactPage> {
         margin: const EdgeInsets.all(AppPadding.p5),
         height: size,
         width: size,
-        child: GestureDetector(
-          onTap: () {
-            // context.go(Routes.chat);
-            context.push(Routes.chat);
-          },
-          child: Image.network(
-            image,
-            fit: BoxFit.cover,
-          ),
+        child: Image.network(
+          image,
+          fit: BoxFit.cover,
         ),
       ),
     );

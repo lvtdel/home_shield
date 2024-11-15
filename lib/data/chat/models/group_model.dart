@@ -6,9 +6,9 @@ import 'package:home_shield/domain/chat/entities/message.dart';
 
 class GroupModel {
   final String? id;
-  final String image;
+  String image;
   final String name;
-  final List<String> userIds;
+   List<String> userIds;
 
   // final List<MessageModel> messages;
 

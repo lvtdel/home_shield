@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:home_shield/core/routing/app_router.dart';
 import 'package:home_shield/core/styles/app_values.dart';
+import 'package:home_shield/presentation/map/cubit/map_cubit.dart';
 import 'package:home_shield/res/assets_res.dart';
 
 // import 'package:google_maps_yt/consts.dart';
@@ -22,8 +24,32 @@ class _MapPageState extends State<MapPage> {
   final Location _locationController = Location();
   BitmapDescriptor? _customIcon;
 
+  late final defaultMarkers = {
+    const Marker(
+      markerId: MarkerId("_sourceLocation"),
+      icon: BitmapDescriptor.defaultMarker,
+      position: _mySchool,
+      infoWindow: InfoWindow(
+        title: 'My School', // Tiêu đề của nhãn
+        snippet: 'Trường ĐH CNTT và TT Việt Hàn', // Mô tả phụ
+      ),
+    ),
+    const Marker(
+      markerId: MarkerId("_police"),
+      icon: BitmapDescriptor.defaultMarker,
+      position: _police,
+      infoWindow: InfoWindow(
+        title: 'Công an Phường Hoà Quý', // Tiêu đề của nhãn
+        // snippet: 'Trường ĐH CNTT và TT Việt Hàn', // Mô tả phụ
+      ),
+    ),
+
+  };
+  late final Set<Marker> _markers = <Marker>{};
+  late  Set<Marker> _friendsMarker = <Marker>{};
+
   final Completer<GoogleMapController> _mapController =
-      Completer<GoogleMapController>();
+  Completer<GoogleMapController>();
 
   static const LatLng _mySchool = LatLng(15.97548334897396, 108.25291027532116);
   static const LatLng _friend1 = LatLng(15.981817, 108.255601);
@@ -38,8 +64,10 @@ class _MapPageState extends State<MapPage> {
   void initState() {
     super.initState();
     _loadCustomIcon();
+    context.read<MapCubit>().getFriendLocations();
+    _markers.addAll(defaultMarkers);
     getLocationUpdates().then(
-      (_) {
+          (_) {
         if (_currentP != null) {
           _cameraToPosition(_currentP!);
         }
@@ -100,53 +128,43 @@ class _MapPageState extends State<MapPage> {
   }
 
   _mapBody() {
+    var currentLocationMarker = Marker(
+        markerId: const MarkerId("_currentLocation"),
+        icon: _customIcon ??
+            BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+        position: _currentP ?? _mySchool,
+        infoWindow: const InfoWindow(
+          title: 'My location', // Tiêu đề của nhãn
+          // snippet: '', // Mô tả phụ
+        ));
     // return Placeholder();
-    return GoogleMap(
-      onMapCreated: ((GoogleMapController controller) =>
-          _mapController.complete(controller)),
-      initialCameraPosition: const CameraPosition(
-        target: _mySchool,
-        zoom: 13,
-      ),
-      markers: {
-        Marker(
-            markerId: const MarkerId("_currentLocation"),
-            icon: _customIcon ??
-                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-            position: _currentP ?? _mySchool,
+    return BlocListener<MapCubit, MapState>(
+      listener: (context, state) {
+        if(state is ShowFriendLocation) {
+          _friendsMarker = state.locationInfos.map((locationInfo)=>  Marker(
+            markerId: MarkerId(locationInfo.userId!),
+            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+            position: LatLng(locationInfo.location!.latitude, locationInfo.location!.longitude),
             infoWindow: InfoWindow(
-              title: 'My location', // Tiêu đề của nhãn
-              // snippet: '', // Mô tả phụ
-            )),
-        const Marker(
-          markerId: MarkerId("_sourceLocation"),
-          icon: BitmapDescriptor.defaultMarker,
-          position: _mySchool,
-          infoWindow: InfoWindow(
-            title: 'My School', // Tiêu đề của nhãn
-            snippet: 'Trường ĐH CNTT và TT Việt Hàn', // Mô tả phụ
-          ),
-        ),
-        const Marker(
-          markerId: MarkerId("_police"),
-          icon: BitmapDescriptor.defaultMarker,
-          position: _police,
-          infoWindow: InfoWindow(
-            title: 'Công an Phường Hoà Quý', // Tiêu đề của nhãn
-            // snippet: 'Trường ĐH CNTT và TT Việt Hàn', // Mô tả phụ
-          ),
-        ),
-        Marker(
-          markerId: MarkerId("_friend1"),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-          position: _friend1,
-          infoWindow: InfoWindow(
-            title: 'Minh Quang', // Tiêu đề của nhãn
-            // snippet: 'Trường ĐH CNTT và TT Việt Hàn', // Mô tả phụ
-          ),
-        ),
+              title: locationInfo.userName, // Tiêu đề của nhãn
+              // snippet: 'Trường ĐH CNTT và TT Việt Hàn', // Mô tả phụ
+            ),
+          )).toSet();
+          setState(() {
+
+          });
+        }
       },
-      polylines: Set<Polyline>.of(polylines.values),
+      child: GoogleMap(
+        onMapCreated: ((GoogleMapController controller) =>
+            _mapController.complete(controller)),
+        initialCameraPosition: const CameraPosition(
+          target: _mySchool,
+          zoom: 13,
+        ),
+        markers: {..._markers,..._friendsMarker, currentLocationMarker},
+        // polylines: Set<Polyline>.of(polylines.values),
+      ),
     );
   }
 
@@ -191,6 +209,8 @@ class _MapPageState extends State<MapPage> {
         setState(() {
           _currentP =
               LatLng(currentLocation.latitude!, currentLocation.longitude!);
+
+          print(currentLocation);
           // _cameraToPosition(_currentP!);
         });
       }

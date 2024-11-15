@@ -16,21 +16,13 @@ class EmergencyPage extends StatefulWidget {
 
 class _EmergencyPageState extends State<EmergencyPage> {
   @override
-  Future<void> initState() async {
+  initState() {
     super.initState();
     _sendLocation();
   }
 
   _sendLocation() async {
-    var location = await getCurrentLocation();
-
-    if (location != null) {
-      context
-          .read<EmergencyCubit>()
-          .sendLocation(location.latitude, location.longitude);
-    } else {
-      showSnackBar(context, "Cannot get location! Try again later.");
-    }
+    context.read<EmergencyCubit>().sendLocation();
   }
 
   @override
@@ -44,30 +36,38 @@ class _EmergencyPageState extends State<EmergencyPage> {
     return BlocBuilder<EmergencyCubit, EmergencyState>(
       builder: (context, state) {
         if (state is SendLocationError) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text("Send locaion error"),
-              SizedBox(height: 20),
-              ElevatedButton(onPressed: _sendLocation, child: Text("Try again"))
-            ],
+          showSnackBar(context, "Cannot get location! Try again later.");
+
+          return SizedBox(
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text("Send locaion error"),
+                const SizedBox(height: 20),
+                ElevatedButton(onPressed: _sendLocation, child: Text("Try again"))
+              ],
+            ),
           );
         }
 
         if (state is SendLocationSuccess) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text("Send locaion success"),
-              SizedBox(height: 20),
-              ElevatedButton(
-                  onPressed: () {
-                    context.pop();
-                  },
-                  child: Text("Go back"))
-            ],
+          return SizedBox(
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text("Send locaion success"),
+                SizedBox(height: 20),
+                ElevatedButton(
+                    onPressed: () {
+                      context.pop();
+                    },
+                    child: Text("Go back"))
+              ],
+            ),
           );
         }
 
@@ -78,30 +78,5 @@ class _EmergencyPageState extends State<EmergencyPage> {
         );
       },
     );
-  }
-
-  Future<LatLng?> getCurrentLocation() async {
-    // Kiểm tra quyền truy cập vị trí
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission != LocationPermission.whileInUse) {
-        return null; // Nếu quyền bị từ chối
-      }
-    }
-
-    // Kiểm tra dịch vụ vị trí
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return null; // Nếu dịch vụ vị trí không được bật
-    }
-
-    // Lấy vị trí hiện tại
-    Position position = await Geolocator.getCurrentPosition(
-        locationSettings:
-            const LocationSettings(accuracy: LocationAccuracy.best));
-
-    // Trả về LatLng nếu có vị trí hợp lệ
-    return LatLng(position.latitude, position.longitude);
   }
 }

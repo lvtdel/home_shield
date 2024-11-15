@@ -39,12 +39,14 @@ dependencies:
   firebase_auth:
   firebase_core:
   cloud_firestore:
+  firebase_storage: 
   google_maps_flutter:
   location:
   flutter_polyline_points:
   collection:
   livekit_client:
   geolocator:
+  image_picker:
   #  mapbox_maps_flutter:
 
 
@@ -130,5 +132,6 @@ flutter:
     - assets/icons/lock_icon.png
     - assets/icons/phone_icon.png
     - assets/icons/redirect_my_location_icon.png
+    - assets/images/avatar_sample.jpg
     - assets/images/friend.png
     - assets/images/logo.png
