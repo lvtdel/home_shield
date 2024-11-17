@@ -78,11 +78,10 @@ class _CallPageState extends State<CallPage> {
 
     _room = Room();
     var url = "wss://my-app-f62a0jdr.livekit.cloud";
-    // var token =
-    //     "eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InJvb20xIn0sImlzcyI6IkFQSTU1TXk1eEF6c3NTbSIsImV4cCI6MTczMTQwOTY0NSwibmJmIjowLCJzdWIiOiJxdWlja3N0YXJ0LXVzZXJuYW1lMSJ9.Bf64ZnubsUcqyvxfDqf2BhICyIr6m4SQ0TyeT_BH3dA";
     var token =
-        "eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InJvb20xIn0sImlzcyI6IkFQSTU1TXk1eEF6c3NTbSIsImV4cCI6MTczMTQwOTQ5MSwibmJmIjowLCJzdWIiOiJxdWlja3N0YXJ0LXVzZXJuYW1lIn0.3lIxi5RJ3m2-_o1s6sxTi5ZdU1Yk5dlK4vU73J3z4t4";
-
+        "eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InJvb20xIn0sImlzcyI6IkFQSTU1TXk1eEF6c3NTbSIsImV4cCI6MTczMTc1NzU4NCwibmJmIjowLCJzdWIiOiJxdWlja3N0YXJ0LXVzZXJuYW1lIn0.WIt2XCYg3Bcfc3_vYDrBVyAoRvn9fd9KUKxdapWoxvE";
+    // var token =
+    //     "eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InJvb20xIn0sImlzcyI6IkFQSTU1TXk1eEF6c3NTbSIsImV4cCI6MTczMTc1NjcxMiwibmJmIjowLCJzdWIiOiJxdWlja3N0YXJ0LXVzZXJuYW1lMSJ9.1MXpqhbvsFbDVphyPN08LczEiIHKVFsZtB3IvsIlAKw";
     await _room.connect(url, token);
     try {
       // video will fail when running in ios simulator
@@ -94,6 +93,7 @@ class _CallPageState extends State<CallPage> {
       print('Could not show video, error: $error');
     }
 
+    publishCameraTrack(_room);
     await _room.localParticipant?.setMicrophoneEnabled(true);
     await _room.localParticipant?.setCameraEnabled(true);
   }
@@ -111,7 +111,7 @@ class _CallPageState extends State<CallPage> {
       body: Center(
         child: _localVideoTrack != null
             ? VideoTrackRenderer(_localVideoTrack!)
-            : CircularProgressIndicator(), // Hiển thị tiến trình khi chưa có video
+            : const CircularProgressIndicator(), // Hiển thị tiến trình khi chưa có video
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

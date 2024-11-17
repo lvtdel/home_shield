@@ -8,12 +8,12 @@ class ScaffoldEdit extends StatelessWidget {
   const ScaffoldEdit(
       {super.key,
       required List<Widget> bodySlivers,
-      required floatingActionButton})
+       floatingActionButton})
       : _slivers = bodySlivers,
         _floatingActionButton = floatingActionButton;
 
   final List<Widget> _slivers;
-  final FloatingActionButton _floatingActionButton;
+  final FloatingActionButton? _floatingActionButton;
 
   @override
   Widget build(BuildContext context) {
@@ -86,8 +86,10 @@ class ScaffoldEdit extends StatelessWidget {
           onPressed: () {context.push(Routes.map);},
         ),
         IconButton(
-          icon: const Icon(Icons.toc),
-          onPressed: () {},
+          icon: const Icon(Icons.notifications),
+          onPressed: () {
+            context.push(Routes.notification);
+          },
         ),
         IconButton(
           icon: const Icon(
@@ -111,6 +113,8 @@ class ScaffoldEdit extends StatelessWidget {
         return "Home";
        case Routes.contact:
          return "Contact";
+       case Routes.notification:
+         return "Notification";
     }
 
     return "";

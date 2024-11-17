@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
 import 'package:dartz/dartz.dart';
+import 'package:get_it/get_it.dart';
 import 'package:home_shield/data/chat/models/group_model.dart';
 import 'package:home_shield/data/chat/models/message_model.dart';
 import 'package:home_shield/domain/chat/entities/group.dart';
@@ -35,12 +37,23 @@ class ChatFirebaseServiceImpl extends ChatFirebaseService {
 
       List<GroupModel> groupModels =
           await Future.wait(groupIds.map((groupId) async {
-        var group = await _groupCollection.doc(groupId).get();
-        // if (group.exists && group.data() != null)
-        var data = group.data()!;
+        var group = _groupCollection.doc(groupId).get();
+        var messCollection =
+            _groupCollection.doc(groupId).collection('messages');
+        var lastMessData = (await messCollection
+            .orderBy('created_at', descending: true)
+            .limit(1)
+            .get()).docs.first.data();
+
+        var data = (await group).data()!;
+
         data['id'] = groupId;
+        data['lastMess'] = lastMessData['content'];
+        data['lastMessTime'] = lastMessData['created_at'];
         return GroupModel.fromJson(data);
       }));
+
+      groupModels.sort((a, b) => b.lastMessTime!.compareTo(a.lastMessTime!));
 
       return Right(groupModels);
     } catch (e) {
@@ -53,8 +66,10 @@ class ChatFirebaseServiceImpl extends ChatFirebaseService {
   Future<Either<String, Stream<List<MessageModel>>>> getMessages(
       String groupId) async {
     try {
-      var messagesCollection =
-          _groupCollection.doc(groupId).collection('messages').orderBy('created_at', descending: true);
+      var messagesCollection = _groupCollection
+          .doc(groupId)
+          .collection('messages')
+          .orderBy('created_at', descending: true);
 
       Stream<List<MessageModel>> messageStream =
           messagesCollection.snapshots().map((querySnapshot) {
@@ -74,7 +89,10 @@ class ChatFirebaseServiceImpl extends ChatFirebaseService {
   Future<Either<String, bool>> sendMessage(
       MessageModel message, String groupId) async {
     try {
-      await _groupCollection.doc(groupId).collection('messages').add(message.toJson());
+      await _groupCollection
+          .doc(groupId)
+          .collection('messages')
+          .add(message.toJson());
 
       return const Right(true);
     } catch (e) {

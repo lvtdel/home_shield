@@ -9,4 +9,6 @@ class Routes {
   static const call = "/call";
   static const createGroup = "/createGroup";
   static const emergency = "/emergency";
+  static const notification = "/notification";
+  static const createNews = "/createNews";
 }

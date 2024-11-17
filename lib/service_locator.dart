@@ -6,8 +6,10 @@ import 'package:home_shield/data/chat/source/chat_firebase_service.dart';
 import 'package:home_shield/data/emergency/repositories/emergency_repository.dart';
 import 'package:home_shield/data/group/repositories/group_repository.dart';
 import 'package:home_shield/data/map/repositories/map_repository.dart';
+import 'package:home_shield/data/notification/repositories/notification_repostitory.dart';
 import 'package:home_shield/data/post/repositories/post_repository_impl.dart';
 import 'package:home_shield/data/post/source/post_firebase_service.dart';
+import 'package:home_shield/data/service/dio_service.dart';
 import 'package:home_shield/domain/auth/repository/auth.dart';
 import 'package:home_shield/domain/auth/use_cases/get_user.dart';
 import 'package:home_shield/domain/auth/use_cases/get_user.dart';
@@ -33,6 +35,8 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<PostFirebaseService>(PostFirebaseServiceImpl());
   sl.registerSingleton<ChatFirebaseService>(ChatFirebaseServiceImpl());
 
+  sl.registerSingleton<DioClient>(DioClient());
+
   // Repository
   sl.registerSingleton<AuthRepository>(AuthRepositoryImpl());
   sl.registerSingleton<PostRepository>(PostRepositoryImpl());
@@ -40,6 +44,7 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<GroupRepository>(GroupRepositoryImpl());
   sl.registerSingleton<EmergencyRepository>(EmergencyRepositoryImpl());
   sl.registerSingleton<MapRepository>(MapRepositoryImpl());
+  sl.registerSingleton<NotificationRepository>(NotificationRepositoryImpl());
 
   // Use case
   sl.registerSingleton<SignupUseCase>(SignupUseCase());

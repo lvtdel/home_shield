@@ -13,7 +13,7 @@ textFieldEdit(String image, String? hintText, controller, {bool obscure = false}
         decoration: InputDecoration(
             prefixIcon: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20),
-                child: Image.asset(image)),
+                child: Image.asset(image, width: 30,height: 30,)),
             hintText: hintText),
       ));
 }

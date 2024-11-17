@@ -112,6 +112,7 @@ class _PostElementState extends State<PostElement> {
           widget.post.image!,
           fit: BoxFit.cover,
           height: 300,
+          width: 400,
           // width: 300,
         ),
         Positioned(
@@ -149,7 +150,7 @@ class _PostElementState extends State<PostElement> {
               children: <Widget>[
                 Container(
                   height: 50.0,
-                  width: 40.0,
+                  width: 50.0,
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       image: DecorationImage(

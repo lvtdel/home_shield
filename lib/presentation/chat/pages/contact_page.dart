@@ -164,22 +164,27 @@ class _ContactPageState extends State<ContactPage> {
               const SizedBox(
                 width: 10,
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    group.name,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w500),
-                  ),
-                  Text(
-                    "Chiều này có vụ án mới",
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  )
-                ],
+              Flexible(
+                fit: FlexFit.loose,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      overflow: TextOverflow.ellipsis,
+                      group.name,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleSmall
+                          ?.copyWith(fontWeight: FontWeight.w500),
+                    ),
+                    Text(
+                      overflow: TextOverflow.ellipsis,
+                      group.lastMess ?? "",
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    )
+                  ],
+                ),
               )
             ],
           ),

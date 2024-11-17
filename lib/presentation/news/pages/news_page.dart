@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:home_shield/core/routing/app_router.dart';
+import 'package:home_shield/core/routing/route_path.dart';
 import 'package:home_shield/core/styles/app_colors.dart';
 import 'package:home_shield/domain/post/entities/post.dart';
 import 'package:home_shield/presentation/news/bloc/news_bloc.dart';
@@ -30,7 +33,9 @@ class _NewsPageState extends State<NewsPage> {
     return ScaffoldEdit(
       bodySlivers: _buildSliverList(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          context.push(Routes.createNews);
+        },
         child: const Icon(Icons.camera),
       ),
     );

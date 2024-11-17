@@ -6,8 +6,10 @@ class LocationInfoModel {
   final String? userId;
   final GeoPoint? location;
   final Timestamp? createAt;
+  final String? phoneNumber;
+  final String? image;
 
-  LocationInfoModel({this.id, this.userName, this.userId, this.location, this.createAt});
+  LocationInfoModel({this.id, this.userName, this.userId, this.location, this.createAt, this.phoneNumber, this.image});
 
   factory LocationInfoModel.fromJson(Map<String, dynamic> json) {
     return LocationInfoModel(
@@ -15,6 +17,8 @@ class LocationInfoModel {
       userId: json['id'],
       location:json['location'],
       createAt: json['create_at'],
+      phoneNumber: json['phoneNumber'],
+      image: json['image'],
     );
   }
 

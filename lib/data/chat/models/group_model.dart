@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:home_shield/data/chat/models/message_model.dart';
 import 'package:home_shield/domain/auth/entites/user.dart';
 import 'package:home_shield/domain/chat/entities/group.dart';
@@ -7,13 +8,17 @@ import 'package:home_shield/domain/chat/entities/message.dart';
 class GroupModel {
   final String? id;
   String image;
+  String? lastMess;
   final String name;
    List<String> userIds;
+   Timestamp? lastMessTime;
 
   // final List<MessageModel> messages;
 
   GroupModel({
     this.id,
+    this.lastMess,
+    this.lastMessTime,
     required this.image,
     required this.name,
     required this.userIds,
@@ -33,6 +38,7 @@ class GroupModel {
       id: id,
       image: image,
       name: name,
+      lastMess: lastMess,
       userIds: userIds,
       // messages: IterableZip([messages, userApps]).map<Message>((e) {
       //   return (e.first as MessageModel).toEntity(e.last as UserApp);
@@ -45,6 +51,8 @@ class GroupModel {
       id: json['id'],
       name: json['name'],
       image: json['image'],
+      lastMess: json['lastMess'],
+      lastMessTime: json['lastMessTime'],
       userIds:
           (json['user_ids'] as List<dynamic>).map((e) => e.toString()).toList(),
       // messages: json['messages'] == null

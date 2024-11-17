@@ -7,6 +7,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:home_shield/core/constant/app_constant.dart';
 import 'package:home_shield/core/routing/app_router.dart';
 import 'package:home_shield/core/routing/route_path.dart';
 import 'package:home_shield/core/styles/app_colors.dart';
@@ -112,6 +113,7 @@ class _ChatPageState extends State<ChatPage> {
         }),
       ],
       leading: CircleAvatar(
+        backgroundColor: AppColors.white,
         backgroundImage: NetworkImage(
           widget.group.image,
         ),
@@ -139,7 +141,7 @@ class _ChatPageState extends State<ChatPage> {
       child: Container(
         height: MediaQuery.of(context).size.height -
             AppBar().preferredSize.height -
-            120,
+            140,
         // Điều chỉnh chiều cao
         child: BlocBuilder<ChatCubit, ChatState>(
           builder: (context, state) {
@@ -171,7 +173,7 @@ class _ChatPageState extends State<ChatPage> {
                             return _messageSend(messages[index].content,
                                 context); // Gọi hàm tạo tin nhắn gửi
                           } else {
-                            return _messageReceive(messages[index].content,
+                            return _messageReceive(messages[index],
                                 context); // Gọi hàm tạo tin nhắn nhận
                           }
                         },
@@ -224,23 +226,48 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _messageReceive(String mess, BuildContext context) {
+  Widget _messageReceive(Message mess, BuildContext context) {
+    String image = mess.userApp?.image ?? AppConstant.avatarSmample;
+    String name = mess.userApp!.name!.split(" ").last;
+    String content = mess.content;
+
     return Align(
       alignment: AlignmentDirectional.centerStart,
       child: IntrinsicWidth(
-        child: Container(
-          padding: const EdgeInsets.all(AppPadding.p16),
-          margin: const EdgeInsets.symmetric(vertical: 10),
-          decoration: ShapeDecoration(
-            shape: AppShapes.threeRoundedRectangle2,
-            color: Theme.of(context).colorScheme.secondary,
-          ),
-          alignment: AlignmentDirectional.center,
-          constraints: const BoxConstraints(maxWidth: AppSize.s300),
-          child: Text(
-            mess,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Column(
+              children: [
+                Text(name, style: TextStyle(fontSize: 14),),
+                SizedBox(height: 3,),
+                CircleAvatar(
+                    backgroundColor: AppColors.white,
+                    backgroundImage: NetworkImage(
+                      image,
+                    )),
+              ],
+            ),
+            const SizedBox(width: 10,),
+            Flexible(
+              fit: FlexFit.loose,
+              child: Container(
+                padding: const EdgeInsets.all(AppPadding.p16),
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                decoration: ShapeDecoration(
+                  shape: AppShapes.threeRoundedRectangle2,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+                alignment: AlignmentDirectional.center,
+                constraints: const BoxConstraints(maxWidth: AppSize.s300),
+                child: Text(
+                  content,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

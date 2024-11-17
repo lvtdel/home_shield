@@ -14,13 +14,17 @@ import 'package:home_shield/presentation/group_manage/page/create_group.dart';
 import 'package:home_shield/presentation/map/cubit/map_cubit.dart';
 import 'package:home_shield/presentation/map/pages/goong_map.dart';
 import 'package:home_shield/presentation/map/pages/map.dart';
+import 'package:home_shield/presentation/news/bloc/create_news_cubit.dart';
 import 'package:home_shield/presentation/news/bloc/news_bloc.dart';
 import 'package:home_shield/presentation/news/pages/news_page.dart';
+import 'package:home_shield/presentation/notification/pages/notification_page.dart';
 import 'package:home_shield/presentation/sign_in/cubit/login_cubit.dart';
 import 'package:home_shield/presentation/sign_in/pages/sign_in_page.dart';
 import 'package:home_shield/presentation/sign_up/cubit/register_cubit.dart';
 import 'package:home_shield/presentation/sign_up/pages/sign_up_page.dart';
 import 'package:home_shield/presentation/splash/pages/splash_page.dart';
+
+import '../../presentation/news/pages/create_news_page.dart';
 
 class AppRouter {
   late final router = GoRouter(
@@ -32,12 +36,7 @@ class AppRouter {
       initialLocation: Routes.splash,
       routes: [
         GoRoute(path: Routes.splash, builder: (_, __) => SplashPage()),
-        GoRoute(
-            path: Routes.news,
-            builder: (_, __) => BlocProvider(
-                  create: (context) => NewsBloc(),
-                  child: const NewsPage(),
-                )),
+        GoRoute(path: Routes.news, builder: (_, __) => NewsPage()),
         GoRoute(
             path: Routes.signUp,
             builder: (_, __) => BlocProvider(
@@ -81,6 +80,14 @@ class AppRouter {
             builder: (_, __) => BlocProvider(
                   create: (context) => EmergencyCubit(),
                   child: EmergencyPage(),
+                )),
+        GoRoute(
+            path: Routes.notification, builder: (_, __) => NotificationPage()),
+        GoRoute(
+            path: Routes.createNews,
+            builder: (_, __) => BlocProvider(
+                  create: (context) => CreateNewsCubit(),
+                  child: CreateNewsPage(),
                 )),
       ]);
 }

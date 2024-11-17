@@ -1,5 +1,7 @@
+import 'package:collection/collection.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get_it/get_it.dart';
 import 'package:home_shield/data/auth/source/auth_firebase_service.dart';
 import 'package:home_shield/data/chat/models/message_model.dart';
 import 'package:home_shield/data/chat/source/chat_firebase_service.dart';

@@ -29,6 +29,7 @@ void main() {
     locationInfos.fold((_) {}, (locationInfos) {
       locationInfos.forEach((e)=>print(e.userName));
       expect(locationInfos.length, greaterThan(0));
+      expect(locationInfos.first.phoneNumber, isNotNull);
     });
   });
 

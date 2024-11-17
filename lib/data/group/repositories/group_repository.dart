@@ -5,6 +5,9 @@ import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:home_shield/data/chat/models/group_model.dart';
+import 'package:home_shield/data/notification/models/notification_model.dart';
+import 'package:home_shield/data/notification/repositories/notification_repostitory.dart';
+import 'package:home_shield/service_locator.dart';
 import 'package:path/path.dart' as pathLib;
 
 abstract class GroupRepository {
@@ -31,8 +34,8 @@ class GroupRepositoryImpl extends GroupRepository {
       }));
 
       String currentUserId = FirebaseAuth.instance.currentUser!.uid;
-      userIds.add(currentUserId);
-      groupModel.userIds = userIds;
+      // userIds.add(currentUserId);
+      groupModel.userIds = [currentUserId];
       groupModel.image = await uploadFile("images/group/", image);
 
       DocumentReference docRef =
@@ -47,14 +50,29 @@ class GroupRepositoryImpl extends GroupRepository {
         "user_id": currentUserId
       });
 
-      for (var userId in userIds) {
-        _userCollection.doc(userId).update({'group_ids': FieldValue.arrayUnion([documentId])});
-      }
+      // _userCollection.doc(currentUserId).
+      NotificationModel notificationModel = NotificationModel(
+          content: "Lời mời tham gia nhóm ${groupModel.name}",
+          params: documentId,
+          type: "GROUP_INVITE",
+          image: groupModel.image,
+          createdAt: Timestamp.now());
+      _sendNotif(notificationModel, userIds);
+
+      await _userCollection.doc(currentUserId).update({
+        'group_ids': FieldValue.arrayUnion([documentId])
+      });
 
       return Right(groupModel.name);
     } catch (e, stackTrace) {
       print(stackTrace);
       return Left(e.toString());
+    }
+  }
+
+  _sendNotif(NotificationModel notif, List<String> userIds) async {
+    for (var userId in userIds) {
+      sl<NotificationRepository>().pushNotif(notif, userId);
     }
   }
 
@@ -81,6 +99,4 @@ class GroupRepositoryImpl extends GroupRepository {
     await storageRef.putFile(file);
     return await storageRef.getDownloadURL();
   }
-
-
 }

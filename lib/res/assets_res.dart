@@ -16,9 +16,11 @@ class AssetsRes {
   static const String HAND_OFF_ICON = 'assets/icons/hand_off_icon.png';
   static const String LOCATION_ICON = 'assets/icons/location_icon.PNG';
   static const String LOCK_ICON = 'assets/icons/lock_icon.png';
+  static const String PENCIL_ICON = 'assets/icons/pencil_icon.png';
   static const String PHONE_ICON = 'assets/icons/phone_icon.png';
   static const String REDIRECT_MY_LOCATION_ICON = 'assets/icons/redirect_my_location_icon.png';
   static const String AVATAR_SAMPLE = 'assets/images/avatar_sample.jpg';
   static const String FRIEND = 'assets/images/friend.png';
   static const String LOGO = 'assets/images/logo.png';
+  static const String UPLOAD_SAMPLE = 'assets/images/upload_sample.png';
 }

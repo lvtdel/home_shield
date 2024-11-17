@@ -35,7 +35,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
 
   @override
   void initState() {
-    nameController.text = "votheluc01@gmail.com";
+    // nameController.text = "votheluc01@gmail.com";
     // passwordController.text = "abba1221";
 
     super.initState();
@@ -93,7 +93,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
         showSnackBar(context, "Welcome ${state.groupName}");
 
         Timer(const Duration(seconds: 1), () {
-          context.go(Routes.news);
+          context.go(Routes.contact);
         });
 
         return ElevatedButton(
@@ -144,7 +144,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                 height: 90,
               ),
               textFieldEdit(
-                  AssetsRes.EMAIL_ICON, "Enter group name", nameController),
+                  AssetsRes.PENCIL_ICON, "Enter group name", nameController),
               const SizedBox(height: 20),
               ...memberList,
               const SizedBox(height: 20),

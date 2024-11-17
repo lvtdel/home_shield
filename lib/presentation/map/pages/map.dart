@@ -7,11 +7,16 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:home_shield/core/routing/app_router.dart';
 import 'package:home_shield/core/styles/app_values.dart';
+import 'package:home_shield/data/map/models/location_info_model.dart';
 import 'package:home_shield/presentation/map/cubit/map_cubit.dart';
+import 'package:home_shield/presentation/map/widgets/organization_popup.dart';
+import 'package:home_shield/presentation/map/widgets/user_popup.dart';
+import 'package:home_shield/presentation/widgets/snack_bar.dart';
 import 'package:home_shield/res/assets_res.dart';
 
 // import 'package:google_maps_yt/consts.dart';
 import 'package:location/location.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -25,40 +30,46 @@ class _MapPageState extends State<MapPage> {
   BitmapDescriptor? _customIcon;
 
   late final defaultMarkers = {
-    const Marker(
-      markerId: MarkerId("_sourceLocation"),
-      icon: BitmapDescriptor.defaultMarker,
-      position: _mySchool,
-      infoWindow: InfoWindow(
-        title: 'My School', // Tiêu đề của nhãn
-        snippet: 'Trường ĐH CNTT và TT Việt Hàn', // Mô tả phụ
-      ),
-    ),
-    const Marker(
-      markerId: MarkerId("_police"),
-      icon: BitmapDescriptor.defaultMarker,
-      position: _police,
-      infoWindow: InfoWindow(
-        title: 'Công an Phường Hoà Quý', // Tiêu đề của nhãn
-        // snippet: 'Trường ĐH CNTT và TT Việt Hàn', // Mô tả phụ
-      ),
-    ),
-
+    Marker(
+        markerId: const MarkerId("_sourceLocation"),
+        icon: BitmapDescriptor.defaultMarker,
+        position: _mySchool,
+        infoWindow: const InfoWindow(
+          title: 'My School', // Tiêu đề của nhãn
+          snippet: 'Trường ĐH CNTT và TT Việt Hàn', // Mô tả phụ
+        ),
+        onTap: () => _onMarkerTapped(
+            organizationName: 'My school', phoneNumber: "0947 899 389")),
+    Marker(
+        markerId: const MarkerId("_police"),
+        icon: BitmapDescriptor.defaultMarker,
+        position: _police,
+        infoWindow: const InfoWindow(
+          title: 'Công an Phường Hoà Quý', // Tiêu đề của nhãn
+          // snippet: 'Trường ĐH CNTT và TT Việt Hàn', // Mô tả phụ
+        ),
+        onTap: () => _onMarkerTapped(
+            organizationName: 'Công an Phường Hoà Quý',
+            phoneNumber: "0947 899 389")),
   };
+
   late final Set<Marker> _markers = <Marker>{};
-  late  Set<Marker> _friendsMarker = <Marker>{};
+  late Set<Marker> _friendsMarker = <Marker>{};
 
   final Completer<GoogleMapController> _mapController =
-  Completer<GoogleMapController>();
+      Completer<GoogleMapController>();
 
   static const LatLng _mySchool = LatLng(15.97548334897396, 108.25291027532116);
-  static const LatLng _friend1 = LatLng(15.981817, 108.255601);
   static const LatLng _police = LatLng(15.985805915717977, 108.24078619046364);
 
-  // static const LatLng _pApplePark = LatLng(37.3346, -122.0090);
+  late StreamSubscription<LocationData> _locationSubscription;
+
   LatLng? _currentP;
 
-  Map<PolylineId, Polyline> polylines = {};
+  bool isShowPopup = false;
+  LocationInfoModel? locationInfoPopup;
+  String? phoneNumberPopup;
+  String? organizationNamePopup;
 
   @override
   void initState() {
@@ -67,18 +78,10 @@ class _MapPageState extends State<MapPage> {
     context.read<MapCubit>().getFriendLocations();
     _markers.addAll(defaultMarkers);
     getLocationUpdates().then(
-          (_) {
+      (_) {
         if (_currentP != null) {
           _cameraToPosition(_currentP!);
         }
-
-        // setState(() {
-        //
-        // });
-
-        // getPolylinePoints().then((coordinates) => {
-        //   generatePolyLineFromPoints(coordinates),
-        // }),
       },
     );
   }
@@ -127,6 +130,18 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
+  void _onMarkerTapped(
+      {LocationInfoModel? locationInfo,
+      String? phoneNumber,
+      String? organizationName}) {
+    setState(() {
+      isShowPopup = true;
+      locationInfoPopup = locationInfo;
+      phoneNumberPopup = phoneNumber;
+      organizationNamePopup = organizationName;
+    });
+  }
+
   _mapBody() {
     var currentLocationMarker = Marker(
         markerId: const MarkerId("_currentLocation"),
@@ -140,32 +155,95 @@ class _MapPageState extends State<MapPage> {
     // return Placeholder();
     return BlocListener<MapCubit, MapState>(
       listener: (context, state) {
-        if(state is ShowFriendLocation) {
-          _friendsMarker = state.locationInfos.map((locationInfo)=>  Marker(
-            markerId: MarkerId(locationInfo.userId!),
-            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-            position: LatLng(locationInfo.location!.latitude, locationInfo.location!.longitude),
-            infoWindow: InfoWindow(
-              title: locationInfo.userName, // Tiêu đề của nhãn
-              // snippet: 'Trường ĐH CNTT và TT Việt Hàn', // Mô tả phụ
-            ),
-          )).toSet();
-          setState(() {
-
-          });
+        if (state is ShowFriendLocation) {
+          _friendsMarker = state.locationInfos
+              .map((locationInfo) => Marker(
+                    markerId: MarkerId(locationInfo.userId!),
+                    icon: BitmapDescriptor.defaultMarkerWithHue(
+                        BitmapDescriptor.hueAzure),
+                    position: LatLng(locationInfo.location!.latitude,
+                        locationInfo.location!.longitude),
+                    infoWindow: InfoWindow(
+                      title: locationInfo.userName, // Tiêu đề của nhãn
+                      // snippet: 'Trường ĐH CNTT và TT Việt Hàn', // Mô tả phụ
+                    ),
+                    onTap: () => _onMarkerTapped(locationInfo: locationInfo),
+                  ))
+              .toSet();
+          setState(() {});
         }
       },
-      child: GoogleMap(
-        onMapCreated: ((GoogleMapController controller) =>
-            _mapController.complete(controller)),
-        initialCameraPosition: const CameraPosition(
-          target: _mySchool,
-          zoom: 13,
-        ),
-        markers: {..._markers,..._friendsMarker, currentLocationMarker},
-        // polylines: Set<Polyline>.of(polylines.values),
+      child: Stack(
+        children: [
+          GoogleMap(
+            onMapCreated: ((GoogleMapController controller) =>
+                _mapController.complete(controller)),
+            initialCameraPosition: const CameraPosition(
+              target: _mySchool,
+              zoom: 13,
+            ),
+            markers: {..._markers, ..._friendsMarker, currentLocationMarker},
+            // polylines: Set<Polyline>.of(polylines.values),
+          ),
+          if (isShowPopup)
+            Positioned(
+              top: 50,
+              // width: MediaQuery.of(context).size.width * 0.8,
+              left: 20,
+              right: 20,
+              child: _buildPopup(),
+            ),
+        ],
       ),
     );
+  }
+
+  _onClosePopup() {
+    print("close ttab");
+    setState(() {
+      isShowPopup = false;
+      locationInfoPopup = null;
+      phoneNumberPopup = null;
+      organizationNamePopup = null;
+    });
+  }
+
+  _onCall() {
+    callPhone(locationInfoPopup!.phoneNumber!);
+  }
+
+  _onCallOrgnization() {
+    callPhone(phoneNumberPopup!);
+  }
+
+  _onMess() {}
+
+  Widget _buildPopup() {
+    if (locationInfoPopup != null) {
+      return UserInfoCard(
+        locationInfoModel: locationInfoPopup!,
+        onCall: _onCall,
+        onMess: _onMess,
+        onClose: _onClosePopup,
+      );
+    }
+    return OrganizationPopup(
+      organizationName: organizationNamePopup!,
+      phoneNumber: phoneNumberPopup,
+      onClose: _onClosePopup,
+      onCall: _onCallOrgnization,
+    );
+  }
+
+  void callPhone(String phoneNumber) async {
+    final Uri url = Uri.parse('tel:$phoneNumber');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      showSnackBar(
+          context, 'Không thể mở ứng dụng gọi điện thoại với số $phoneNumber');
+      // throw 'Không thể mở ứng dụng gọi điện thoại với số $phoneNumber';
+    }
   }
 
   Future<void> _cameraToPosition(LatLng pos) async {
@@ -202,7 +280,7 @@ class _MapPageState extends State<MapPage> {
       }
     }
 
-    _locationController.onLocationChanged
+    _locationSubscription = _locationController.onLocationChanged
         .listen((LocationData currentLocation) {
       if (currentLocation.latitude != null &&
           currentLocation.longitude != null) {
@@ -217,40 +295,10 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
-  // Future<List<LatLng>> getPolylinePoints() async {
-  //   List<LatLng> polylineCoordinates = [];
-  //   PolylinePoints polylinePoints = PolylinePoints();
-  //   PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-  //     GOOGLE_MAPS_API_KEY,
-  //     PointLatLng(_pGooglePlex.latitude, _pGooglePlex.longitude),
-  //     PointLatLng(_pApplePark.latitude, _pApplePark.longitude),
-  //     travelMode: TravelMode.driving,
-  //   );
-  //   if (result.points.isNotEmpty) {
-  //     result.points.forEach((PointLatLng point) {
-  //       polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-  //     });
-  //   } else {
-  //     print(result.errorMessage);
-  //   }
-  //   return polylineCoordinates;
-  // }
-
-  void generatePolyLineFromPoints(List<LatLng> polylineCoordinates) async {
-    PolylineId id = PolylineId("poly");
-    Polyline polyline = Polyline(
-        polylineId: id,
-        color: Colors.black,
-        points: polylineCoordinates,
-        width: 8);
-    setState(() {
-      polylines[id] = polyline;
-    });
-  }
-
   @override
   void dispose() {
     _locationController.onLocationChanged.drain();
+    _locationSubscription.cancel();
     super.dispose();
   }
 }

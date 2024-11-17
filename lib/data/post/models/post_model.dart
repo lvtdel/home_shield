@@ -16,7 +16,7 @@ class PostModel {
   PostModel(
       {this.id,
       required this.content,
-      required this.image,
+       this.image,
       required this.createdAt,
       this.userId,
       this.comments});
@@ -54,8 +54,8 @@ class PostModel {
         'id': id,
         'content': content,
         'image': image,
-        'createdAt': createdAt,
+        'created_at': createdAt,
         'comments': comments?.map((e) => e.toJson()).toList(),
-        'userId': userId,
+        'user_id': userId,
       };
 }

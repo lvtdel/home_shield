@@ -47,6 +47,8 @@ dependencies:
   livekit_client:
   geolocator:
   image_picker:
+  url_launcher:
+  dio:
   #  mapbox_maps_flutter:
 
 
@@ -130,8 +132,10 @@ flutter:
     - assets/icons/hand_off_icon.png
     - assets/icons/location_icon.PNG
     - assets/icons/lock_icon.png
+    - assets/icons/pencil_icon.png
     - assets/icons/phone_icon.png
     - assets/icons/redirect_my_location_icon.png
     - assets/images/avatar_sample.jpg
     - assets/images/friend.png
     - assets/images/logo.png
+    - assets/images/upload_sample.png
