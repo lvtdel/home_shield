@@ -11,4 +11,6 @@ class Routes {
   static const emergency = "/emergency";
   static const notification = "/notification";
   static const createNews = "/createNews";
+  static const friends = "/friends";
+  static const userDetail = "/userDetail";
 }

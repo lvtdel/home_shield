@@ -6,6 +6,7 @@ import 'package:home_shield/core/styles/app_colors.dart';
 import 'package:home_shield/core/styles/app_shapes.dart';
 import 'package:home_shield/core/styles/app_values.dart';
 import 'package:home_shield/domain/post/entities/post.dart';
+import 'package:shimmer/shimmer.dart';
 
 class PostElement extends StatefulWidget {
   const PostElement(this.post, {super.key});
@@ -110,6 +111,20 @@ class _PostElementState extends State<PostElement> {
         (widget.post.image == null || widget.post.image!.isEmpty) ?
         Container(color: Theme.of(context).colorScheme.primary,height: 50,) : Image.network(
           widget.post.image!,
+          loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+            if (loadingProgress == null) {
+              return child; // Hình ảnh đã tải xong
+            }
+            return Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: Container(
+                width: 400,
+                height: 300,
+                color: Colors.grey[300],
+              ),
+            );
+          },
           fit: BoxFit.cover,
           height: 300,
           width: 400,

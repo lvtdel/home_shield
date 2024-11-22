@@ -49,6 +49,8 @@ dependencies:
   image_picker:
   url_launcher:
   dio:
+  shimmer:
+  sensors_plus:
   #  mapbox_maps_flutter:
 
 

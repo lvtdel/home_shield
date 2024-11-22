@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:home_shield/common/open_app/open_phone.dart';
 import 'package:home_shield/core/routing/app_router.dart';
 import 'package:home_shield/core/styles/app_values.dart';
 import 'package:home_shield/data/map/models/location_info_model.dart';
@@ -209,11 +210,11 @@ class _MapPageState extends State<MapPage> {
   }
 
   _onCall() {
-    callPhone(locationInfoPopup!.phoneNumber!);
+    callPhone(locationInfoPopup!.phoneNumber!, context);
   }
 
   _onCallOrgnization() {
-    callPhone(phoneNumberPopup!);
+    callPhone(phoneNumberPopup!, context);
   }
 
   _onMess() {}
@@ -235,16 +236,7 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
-  void callPhone(String phoneNumber) async {
-    final Uri url = Uri.parse('tel:$phoneNumber');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    } else {
-      showSnackBar(
-          context, 'Không thể mở ứng dụng gọi điện thoại với số $phoneNumber');
-      // throw 'Không thể mở ứng dụng gọi điện thoại với số $phoneNumber';
-    }
-  }
+
 
   Future<void> _cameraToPosition(LatLng pos) async {
     final GoogleMapController controller = await _mapController.future;

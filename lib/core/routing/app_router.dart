@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:home_shield/core/routing/route_path.dart';
+import 'package:home_shield/domain/auth/entites/user.dart';
 import 'package:home_shield/domain/chat/entities/group.dart';
 import 'package:home_shield/presentation/call/pages/call_page.dart';
 import 'package:home_shield/presentation/chat/bloc/chat_cubit.dart';
@@ -9,6 +10,8 @@ import 'package:home_shield/presentation/chat/pages/chat_page.dart';
 import 'package:home_shield/presentation/chat/pages/contact_page.dart';
 import 'package:home_shield/presentation/emergency/cubit/emergency_cubit.dart';
 import 'package:home_shield/presentation/emergency/pages/emergency_page.dart';
+import 'package:home_shield/presentation/friends/pages/friend_page.dart';
+import 'package:home_shield/presentation/friends/pages/user_detail.dart';
 import 'package:home_shield/presentation/group_manage/cubit/group_cubit.dart';
 import 'package:home_shield/presentation/group_manage/page/create_group.dart';
 import 'package:home_shield/presentation/map/cubit/map_cubit.dart';
@@ -89,5 +92,10 @@ class AppRouter {
                   create: (context) => CreateNewsCubit(),
                   child: CreateNewsPage(),
                 )),
+        GoRoute(
+            path: Routes.friends, builder: (_, __) => FriendsPage()),
+        GoRoute(
+            path: Routes.userDetail, builder: (_, state) => UserDetailPage(user: state.extra as UserApp,),
+        ),
       ]);
 }

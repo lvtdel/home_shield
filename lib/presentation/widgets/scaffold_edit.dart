@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:home_shield/common/open_app/open_phone.dart';
 import 'package:home_shield/core/routing/route_path.dart';
 import 'package:home_shield/core/styles/app_colors.dart';
 import 'package:home_shield/presentation/news/widgets/post_widget.dart';
@@ -91,14 +92,19 @@ class ScaffoldEdit extends StatelessWidget {
             context.push(Routes.notification);
           },
         ),
-        IconButton(
-          icon: const Icon(
-            Icons.emergency,
-            color: Colors.red,
-          ),
-          onPressed: () {
-            context.push(Routes.emergency);
+        GestureDetector(
+          onLongPress: () {
+            callPhone("0981147346", context);
           },
+          child: IconButton(
+            icon: const Icon(
+              Icons.emergency,
+              color: Colors.red,
+            ),
+            onPressed: () {
+              context.push(Routes.emergency);
+            },
+          ),
         ),
         const SizedBox(
           width: 10,

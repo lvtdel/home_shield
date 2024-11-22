@@ -4,7 +4,13 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:home_shield/core/routing/app_router.dart';
+import 'package:home_shield/core/routing/route_path.dart';
+import 'package:home_shield/core/styles/app_colors.dart';
+import 'package:home_shield/core/styles/app_shapes.dart';
+import 'package:home_shield/core/styles/app_text_style.dart';
+import 'package:home_shield/core/styles/app_values.dart';
 import 'package:home_shield/presentation/emergency/cubit/emergency_cubit.dart';
+import 'package:home_shield/presentation/widgets/scaffold_edit.dart';
 import 'package:home_shield/presentation/widgets/snack_bar.dart';
 
 class EmergencyPage extends StatefulWidget {
@@ -23,60 +29,87 @@ class _EmergencyPageState extends State<EmergencyPage> {
 
   _sendLocation() async {
     context.read<EmergencyCubit>().sendLocation();
+    showSnackBar(context, "Getting location!");
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _body(),
-    );
+    return ScaffoldEdit(bodySlivers: [_body()]);
   }
 
   _body() {
-    return BlocBuilder<EmergencyCubit, EmergencyState>(
-      builder: (context, state) {
-        if (state is SendLocationError) {
-          showSnackBar(context, "Cannot get location! Try again later.");
-
-          return SizedBox(
-            width: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text("Send locaion error"),
-                const SizedBox(height: 20),
-                ElevatedButton(onPressed: _sendLocation, child: Text("Try again"))
-              ],
-            ),
-          );
-        }
-
+    return BlocListener<EmergencyCubit, EmergencyState>(
+      listener: (context, state) {
         if (state is SendLocationSuccess) {
-          return SizedBox(
-            width: double.infinity,
-            child: Column(
+          showSnackBar(context, "Send location success");
+        }
+      },
+      child: SliverToBoxAdapter(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text("Send locaion success"),
-                SizedBox(height: 20),
-                ElevatedButton(
-                    onPressed: () {
-                      context.pop();
-                    },
-                    child: Text("Go back"))
+                _item(icon: Icons.location_on_outlined, text: "Map", onTap: (){context.push(Routes.map);}),
+                _item(
+                    icon: Icons.report_outlined,
+                    text: "Report",
+                    color: Colors.red.shade600)
               ],
             ),
-          );
-        }
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _item(icon: Icons.chat_outlined, text: "Messages", onTap: (){context.push(Routes.contact);}),
+                _item(icon: Icons.mic_none_outlined, text: "Record")
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _item(icon: Icons.gavel_outlined, text: "Info"),
+                _item(icon: Icons.quick_contacts_dialer_outlined, text: "Friends", onTap: (){context.push(Routes.friends);}),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-        return const SizedBox(
-          height: 20,
-          width: 20,
-          child: CircularProgressIndicator(),
-        );
-      },
+  _item({required IconData icon, required String text, Color? color, onTap}) {
+    return Container(
+      margin: const EdgeInsets.all(AppPadding.p15),
+      decoration: AppShapes.inputBoxDecoration,
+
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: AppSize.s130,
+          height: AppSize.s130,
+          // decoration: AppShapes.inputBoxDecoration,
+          margin: const EdgeInsets.all(3),
+          // decoration: AppShapes.inputBoxDecoration,
+          decoration: AppShapes.inputBoxDecoration.copyWith(
+              color: color ?? AppColors.primary),
+          // decoration: ,
+          // color: AppColors.primary,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: AppSize.s40,
+                color: AppColors.white,
+              ),
+              const SizedBox(height: 5,),
+              Text(text,
+                  style: AppTextStyle.bold20.copyWith(color: AppColors.white))
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

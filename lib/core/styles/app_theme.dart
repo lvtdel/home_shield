@@ -174,6 +174,10 @@ class AppTheme {
             borderRadius: BorderRadius.circular(30),
             borderSide: BorderSide.none,
           ),
+          disabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: BorderSide.none,
+          ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30),
             borderSide: BorderSide(

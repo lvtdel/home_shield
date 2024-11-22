@@ -9,6 +9,7 @@ import 'package:home_shield/domain/chat/entities/group.dart';
 import 'package:home_shield/presentation/chat/bloc/contact_cubit.dart';
 import 'package:home_shield/presentation/news/widgets/post_widget.dart';
 import 'package:home_shield/presentation/widgets/scaffold_edit.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ContactPage extends StatefulWidget {
   const ContactPage({super.key});
@@ -105,6 +106,20 @@ class _ContactPageState extends State<ContactPage> {
         width: size,
         child: Image.network(
           image,
+          loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+            if (loadingProgress == null) {
+              return child; // Hình ảnh đã tải xong
+            }
+            return Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: Container(
+                width: 400,
+                height: 300,
+                color: Colors.grey[300],
+              ),
+            );
+          },
           fit: BoxFit.cover,
         ),
       ),
