@@ -39,7 +39,10 @@ dependencies:
   firebase_auth:
   firebase_core:
   cloud_firestore:
-  firebase_storage: 
+  firebase_storage:
+  firebase_crashlytics:
+  firebase_analytics:
+
   google_maps_flutter:
   location:
   flutter_polyline_points:

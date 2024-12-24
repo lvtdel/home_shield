@@ -69,9 +69,9 @@ class AppRouter {
             path: Routes.map,
             builder: (_, __) => BlocProvider(
                   create: (context) => MapCubit(),
-                  child: MapPage(),
+                  child: const MapPage(),
                 )),
-        GoRoute(path: Routes.call, builder: (_, __) => CallPage()),
+        GoRoute(path: Routes.call, builder: (_, __) => const CallPage()),
         GoRoute(
             path: Routes.createGroup,
             builder: (_, __) => BlocProvider(
@@ -82,18 +82,18 @@ class AppRouter {
             path: Routes.emergency,
             builder: (_, __) => BlocProvider(
                   create: (context) => EmergencyCubit(),
-                  child: EmergencyPage(),
+                  child: const EmergencyPage(),
                 )),
         GoRoute(
-            path: Routes.notification, builder: (_, __) => NotificationPage()),
+            path: Routes.notification, builder: (_, __) => const NotificationPage()),
         GoRoute(
             path: Routes.createNews,
             builder: (_, __) => BlocProvider(
                   create: (context) => CreateNewsCubit(),
-                  child: CreateNewsPage(),
+                  child: const CreateNewsPage(),
                 )),
         GoRoute(
-            path: Routes.friends, builder: (_, __) => FriendsPage()),
+            path: Routes.friends, builder: (_, __) => const FriendsPage()),
         GoRoute(
             path: Routes.userDetail, builder: (_, state) => UserDetailPage(user: state.extra as UserApp,),
         ),

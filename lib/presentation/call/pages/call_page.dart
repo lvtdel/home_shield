@@ -13,13 +13,26 @@ class CallPage extends StatefulWidget {
 }
 
 class _CallPageState extends State<CallPage> {
-  late Room _room;
+  late final Room _room = Room();
   RemoteVideoTrack? _localVideoTrack;
+  late final EventsListener<RoomEvent> _listener = _room.createListener();
+  late RemoteParticipant _remoteParticipant;
 
   @override
   void initState() {
     super.initState();
     _call();
+
+    _listener
+      ..on<RoomDisconnectedEvent>((_) {
+        print("Disconnect event $_");
+      })
+      ..on<ParticipantConnectedEvent>((e) {
+        print("participant joined: ${e.participant.identity}");
+        // showVideo();
+        _remoteParticipant = e.participant;
+        _remoteParticipant.addListener(_renderVideo);
+      });
   }
 
   Future<LocalVideoTrack> createCameraTrack() async {
@@ -46,11 +59,25 @@ class _CallPageState extends State<CallPage> {
     }
   }
 
+  _renderVideo() {
+    print("Call render video");
+
+    if (_remoteParticipant.hasVideo) {
+      print("Par has video");
+
+      setState(() {
+        _localVideoTrack =
+            _remoteParticipant.videoTrackPublications.first.track;
+      });
+    }
+  }
+
   showVideo() {
     try {
       setState(() {
         // _localVideoTrack =
         //     _room.localParticipant?.videoTrackPublications.last.track;
+        _room.remoteParticipants.values.first.addListener(_renderVideo);
         _localVideoTrack = _room.remoteParticipants.values
             .firstWhere((par) => par.hasVideo)
             .videoTrackPublications
@@ -76,30 +103,28 @@ class _CallPageState extends State<CallPage> {
       // ... your room options
     );
 
-    _room = Room();
+    // _room = Room();
     var url = "wss://my-app-f62a0jdr.livekit.cloud";
     var token =
-        "eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InJvb20xIn0sImlzcyI6IkFQSTU1TXk1eEF6c3NTbSIsImV4cCI6MTczMTc1NzU4NCwibmJmIjowLCJzdWIiOiJxdWlja3N0YXJ0LXVzZXJuYW1lIn0.WIt2XCYg3Bcfc3_vYDrBVyAoRvn9fd9KUKxdapWoxvE";
+        "eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InJvb20xIn0sImlzcyI6IkFQSTU1TXk1eEF6c3NTbSIsImV4cCI6MTczNTExOTM2NSwibmJmIjowLCJzdWIiOiJxdWlja3N0YXJ0LXVzZXJuYW1lIn0.F0ADbs5nnsFSccLoTOm67E2OCXokWyxNWZsbbNpzunk";
     // var token =
-    //     "eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InJvb20xIn0sImlzcyI6IkFQSTU1TXk1eEF6c3NTbSIsImV4cCI6MTczMTc1NjcxMiwibmJmIjowLCJzdWIiOiJxdWlja3N0YXJ0LXVzZXJuYW1lMSJ9.1MXpqhbvsFbDVphyPN08LczEiIHKVFsZtB3IvsIlAKw";
+    //     "eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InJvb20xIn0sImlzcyI6IkFQSTU1TXk1eEF6c3NTbSIsImV4cCI6MTczNTExOTQ5MiwibmJmIjowLCJzdWIiOiJxdWlja3N0YXJ0LXVzZXJuYW1lMSJ9.7HXs20gH5tyCcdYmFg2rWUiIf4R3gJv9td9zSLX1KS8";
     await _room.connect(url, token);
-    try {
-      // video will fail when running in ios simulator
-      Timer(const Duration(seconds: 3), () {
-        showVideo();
-        print("_room: ${_room.localParticipant}");
-      });
-    } catch (error) {
-      print('Could not show video, error: $error');
-    }
 
     publishCameraTrack(_room);
     await _room.localParticipant?.setMicrophoneEnabled(true);
     await _room.localParticipant?.setCameraEnabled(true);
+
+    var participants = _room.remoteParticipants.values;
+    if (participants.isNotEmpty) {
+      _remoteParticipant = participants.first;
+      _remoteParticipant.addListener(_renderVideo);
+    }
   }
 
   @override
   void dispose() {
+    _listener.dispose();
     _room.dispose();
     super.dispose();
   }
@@ -114,7 +139,8 @@ class _CallPageState extends State<CallPage> {
             : const CircularProgressIndicator(), // Hiển thị tiến trình khi chưa có video
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
+          _room.disconnect();
           context.pop();
         },
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
